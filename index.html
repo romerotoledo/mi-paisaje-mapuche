@@ -144,7 +144,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
     <div class="missionValue" id="m2relation">El paisaje está comenzando a organizarse.</div>
   </div>
   <button id="freeMode">Entrar al modo paisaje libre</button>
-  <p class="sourceNote">🔊 La pronunciación utiliza una guía sintetizada aproximada. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
+  <p class="sourceNote">🔊 Cada término se lee tal como está escrito, usando la voz española más natural disponible en el dispositivo. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
 </section>
 
 <div id="helpChip">👆 Toca · ✋ Arrastra · 🤏 Pellizca</div>
@@ -767,7 +767,6 @@ function showRelationFeedback(type,i,k){
   if(general)return showLandscapeFeedback(`general-${type}`,general,22000,1);
   return false;
 }
-const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',foye:'Fo-ye',woman:'Do-mo',man:'Wen-tru',girl:'Pi-chi do-mo',boy:'Pi-chi wen-tru',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
 let audioCtx=null,musicTimer=null,musicStep=0;
 function getAudioContext(){
   const AudioEngine=window.AudioContext||window.webkitAudioContext;if(!AudioEngine)return null;
@@ -785,9 +784,31 @@ function musicPulse(){
 }
 function startMusic(){if(!soundOn||musicTimer)return;if(!getAudioContext())return;musicPulse();musicTimer=setInterval(musicPulse,2400)}
 function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}}
+let speechVoices=[];
+function updateSpeechVoices(){speechVoices=speechSynthesis.getVoices()||[]}
+function speechVoiceScore(voice){
+  const lang=(voice.lang||'').toLowerCase(),name=(voice.name||'').toLowerCase();
+  if(lang!=='es'&&!lang.startsWith('es-'))return -1;
+  let score=lang==='es-cl'?60:lang==='es-419'?50:35;
+  if(/siri|natural|premium|enhanced|neural|paulina|m[oó]nica/.test(name))score+=30;
+  if(voice.localService)score+=10;if(voice.default)score+=5;return score;
+}
+function getNaturalSpanishVoice(){
+  const ranked=speechVoices.map(voice=>({voice,score:speechVoiceScore(voice)})).filter(item=>item.score>=0).sort((a,b)=>b.score-a.score);
+  return ranked.length?ranked[0].voice:null;
+}
+if('speechSynthesis'in window){
+  updateSpeechVoices();
+  if(speechSynthesis.addEventListener)speechSynthesis.addEventListener('voiceschanged',updateSpeechVoices);
+  else speechSynthesis.onvoiceschanged=updateSpeechVoices;
+}
 function pronounce(id){
   if(!soundOn||!pieces[id])return;startMusic();
-  if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(pronunciations[id]||pieces[id].mapu);u.lang='es-CL';u.rate=.68;u.pitch=.92;u.volume=.9;speechSynthesis.speak(u)}
+  if('speechSynthesis'in window){
+    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(pieces[id].mapu),voice=getNaturalSpanishVoice();
+    if(voice){u.voice=voice;u.lang=voice.lang||'es-CL'}else u.lang='es-CL';
+    u.rate=.88;u.pitch=1;u.volume=.92;speechSynthesis.speak(u);
+  }
 }
 function beep(freq=520,d=.08){
   if(!soundOn)return;
