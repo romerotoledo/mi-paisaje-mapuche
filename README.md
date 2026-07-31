@@ -2,6 +2,10 @@
 
 Juego educativo 3D para construir un paisaje mapuche y conocer elementos naturales, productivos, domésticos, ceremoniales y sociales.
 
+Esta rama contiene un prototipo experimental de movimiento libre. Después de colocar una persona o un animal, se toca su figura para seleccionarla y luego se toca otra casilla para indicar el destino. Las personas y los animales terrestres buscan una ruta que evita el agua y las piezas que bloquean el paso; el cóndor y el halcón pueden sobrevolarlas.
+
+Los chiliwekes, gallinas y otros animales pueden entrar en un malal al tocar la empalizada o el recinto comunitario como destino. Niñas, niños y otras personas pueden explorar el tablero y volver a la ruka. Un anillo amarillo identifica la figura seleccionada y otro verde muestra el destino. Las categorías están desbloqueadas desde el inicio para facilitar la prueba del prototipo.
+
 Proyecto FONDECYT 1231127, dirigido por el Dr. Hugo Romero-Toledo, con identidad institucional de ANID y la Universidad Autónoma de Chile.
 
 La escena conserva su estética isométrica *low-poly* y suma movimientos ambientales discretos: ondulación del agua, viento en árboles y foye, humo reciclado en los fogones, vuelos ocasionales del cóndor, movimientos breves del pudú y las gallinas, y entre dos y tres nubes según la capacidad del dispositivo. Las animaciones se pausan cuando la pestaña no está visible y respetan `prefers-reduced-motion`.
