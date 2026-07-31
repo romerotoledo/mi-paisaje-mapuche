@@ -103,5 +103,22 @@ assert.doesNotMatch(html, /setPointerCapture/);
 assert.doesNotMatch(html, /\.ctrl\{width:(?:4[0-3]|[0-3]\d)px;height:/, "Los controles deben medir al menos 44 px");
 const animationSource=html.slice(html.indexOf("function animateEntry"),html.indexOf("function place"));
 assert.doesNotMatch(animationSource,/new THREE\./,"El ciclo de animación no debe crear geometrías ni materiales");
+assert.match(html, /Prototipo móvil/);
+assert.match(html, /let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=true/);
+assert.match(html, /const movableTypes=new Set\(/);
+for (const id of ["camelid", "chicken", "girl", "boy", "woman", "man", "pudu", "condor"]) {
+  assert.match(html, new RegExp(`movableTypes[^;]+['"]${id}['"]`));
+}
+for (const fn of [
+  "getMoversAtCell", "hostAccepts", "movementCellAvailable", "findMovePath",
+  "selectMover", "startMovement", "updateActiveMovement", "finishMovement", "restoreMove",
+]) assert.match(html, new RegExp(`function ${fn}\\(`), `${fn} debe existir`);
+assert.match(html, /animalMovers\.has\(record\.type\).*host\.type==='fence'\|\|host\.type==='fort'/s);
+assert.match(html, /humanMovers\.has\(record\.type\).*host\.type==='ruka'\|\|host\.type==='fort'/s);
+assert.match(html, /groundCell\.type==='water'/);
+assert.match(html, /reservedDestinations/);
+assert.match(html, /op:'move'/);
+assert.match(html, /updateActiveMovement\(delta\)/);
+assert.match(html, /id="moveStatus"/);
 
 console.log("OK: HTML estático, relaciones, animaciones reutilizables, audio, recursos y controles táctiles validados.");
