@@ -41,5 +41,10 @@ for (const eventName of ["touchstart", "touchmove", "touchend", "touchcancel"]) 
 assert.match(html, /function paintGround\(i,k,type\)/);
 assert.match(html, /pieces\[selected\]\.kind==='block'/);
 assert.match(html, /op:'paint'/);
+assert.match(html, /lonko:\{cat:'social'/);
+assert.match(html, /id="turnPiece"/);
+assert.match(html, /j=1,k=/);
+assert.match(html, /Ese espacio ya está ocupado/);
+assert.match(html, /baseRotation:mesh\.rotation\.y/);
 
 console.log("OK: HTML estático, HTTPS, recursos, controles táctiles y sintaxis JavaScript validados.");
