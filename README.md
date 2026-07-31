@@ -4,6 +4,8 @@ Juego educativo 3D para construir un paisaje mapuche y conocer elementos natural
 
 Proyecto FONDECYT 1231127, dirigido por el Dr. Hugo Romero-Toledo, con identidad institucional de ANID y la Universidad Autónoma de Chile.
 
+La escena utiliza una estética isométrica *low-poly* coherente y piezas apoyadas sobre casillas individuales. El malal se representa como un bloque cerrado de empalizada, por lo que no necesita controles de orientación.
+
 ## Uso
 
 No requiere instalación, compilación ni backend. Abre `index.html` desde un servidor web estático. En iPhone o iPad, toca para colocar piezas, arrastra para girar y pellizca para acercar o alejar.

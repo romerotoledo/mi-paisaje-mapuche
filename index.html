@@ -10,9 +10,9 @@
 <title>Mi paisaje mapuche</title>
 <style>
 :root{
-  --earth:#5b3e2b; --earth2:#2f2118; --cream:#fff7e7; --ochre:#d89a35;
-  --green:#4f8b45; --green2:#315f35; --blue:#4a9ac2; --red:#a94332;
-  --panel:rgba(255,250,239,.96); --shadow:0 8px 24px rgba(28,20,14,.24);
+  --earth:#61452f; --earth2:#2f241b; --cream:#fff8e9; --ochre:#d89a35;
+  --green:#5d9148; --green2:#355f34; --blue:#4f9fc6; --red:#a94332;
+  --panel:rgba(255,250,239,.97); --shadow:0 9px 26px rgba(45,31,20,.23);
   --safe-top:env(safe-area-inset-top,0px); --safe-right:env(safe-area-inset-right,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px); --safe-left:env(safe-area-inset-left,0px);
 }
@@ -20,7 +20,9 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#a8c9df;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--earth2);overscroll-behavior:none}
 body{-webkit-touch-callout:none}
 button{font:inherit;color:inherit;-webkit-appearance:none;appearance:none}
-#app{position:fixed;inset:0;touch-action:none;background:linear-gradient(#80b7da 0 45%,#c8d7a2 76%,#c2a86c 100%)}
+#app{position:fixed;inset:0;touch-action:none;background:
+  radial-gradient(circle at 68% 24%,rgba(255,247,205,.58),transparent 23%),
+  linear-gradient(#91c5df 0 44%,#d6dfb1 72%,#c6a975 100%)}
 canvas{position:absolute;inset:0;display:block;touch-action:none}
 .topPattern{position:absolute;z-index:30;top:0;left:0;right:0;height:8px;background:repeating-linear-gradient(90deg,#a94332 0 16px,#f5dfaa 16px 23px,#2b251f 23px 31px,#d89a35 31px 46px,#4a9ac2 46px 54px,#f5dfaa 54px 61px)}
 header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + var(--safe-top)) calc(14px + var(--safe-right)) 34px calc(14px + var(--safe-left));background:linear-gradient(rgba(35,27,20,.38),transparent);pointer-events:none}
@@ -38,7 +40,7 @@ header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + va
 .missionCard p{margin:6px 0 0 37px;font-size:13px;line-height:1.35}
 #helpChip{position:absolute;z-index:12;left:50%;top:calc(69px + var(--safe-top));transform:translateX(-50%);max-width:58vw;border:2px solid var(--earth);border-radius:999px;background:var(--panel);box-shadow:var(--shadow);padding:7px 12px;font-size:11px;font-weight:900;text-align:center;transition:opacity .4s}
 #controls{position:absolute;z-index:14;right:calc(10px + var(--safe-right));top:calc(65px + var(--safe-top));display:flex;flex-direction:column;gap:7px}
-.ctrl{width:47px;height:47px;border:2px solid rgba(91,62,43,.25);border-radius:15px;background:var(--panel);box-shadow:0 5px 14px rgba(28,20,14,.22);font-size:21px;font-weight:900;touch-action:manipulation}
+.ctrl{width:47px;height:47px;border:2px solid rgba(97,69,47,.24);border-radius:15px;background:linear-gradient(#fffdf6,#f2e6cc);box-shadow:0 5px 14px rgba(28,20,14,.22),inset 0 1px 0 #fff;font-size:21px;font-weight:900;touch-action:manipulation}
 .ctrl:active{transform:scale(.92)}
 #toast{position:absolute;z-index:50;left:50%;bottom:calc(188px + var(--safe-bottom));transform:translateX(-50%);max-width:88vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#241a13;color:#fff;padding:10px 17px;border-radius:999px;font-weight:900;opacity:0;pointer-events:none;transition:.25s}
 #toast.show{opacity:.96;bottom:calc(201px + var(--safe-bottom))}
@@ -58,7 +60,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
 .item{flex:0 0 75px;min-height:82px;border:2px solid rgba(91,62,43,.18);border-radius:15px;background:var(--cream);box-shadow:0 4px 10px rgba(28,20,14,.24);padding:5px;text-align:center;touch-action:manipulation}
 .item.selected{border-color:var(--red);box-shadow:0 0 0 3px rgba(169,67,50,.28),0 4px 10px rgba(28,20,14,.24);transform:translateY(-2px)}
 .item.locked{opacity:.42;filter:grayscale(.35)}
-.itemIcon{height:35px;border-radius:10px;background:linear-gradient(#e7f0dc,#d4e2c5);display:grid;place-items:center;font-size:23px}
+.itemIcon{height:35px;border-radius:10px;background:linear-gradient(145deg,#eef5df,#cbdcb5);box-shadow:inset 0 -2px 0 rgba(73,105,54,.12);display:grid;place-items:center;font-size:23px}
 .itemName{font-size:12px;line-height:1.05;font-weight:900;margin-top:4px}
 .itemEs{font-size:9.5px;line-height:1.05;color:#866447;font-weight:800}
 .item.delete{background:#f9ded7}
@@ -148,7 +150,6 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   <button class="ctrl" id="zin" aria-label="Acercar">＋</button>
   <button class="ctrl" id="zout" aria-label="Alejar">－</button>
   <button class="ctrl" id="undo" aria-label="Deshacer">↶</button>
-  <button class="ctrl" id="turnPiece" aria-label="Girar pieza seleccionada">⤾</button>
   <button class="ctrl" id="info" aria-label="Información">ⓘ</button>
   <button class="ctrl" id="sound" aria-label="Sonido">🔊</button>
   <button class="ctrl" id="reset" aria-label="Reiniciar">🧹</button>
@@ -199,7 +200,7 @@ const pieces={
   ruka:{cat:'domestico',kind:'obj',ico:'🏠',mapu:'Ruka',es:'Casa',desc:'La ruka es un espacio de vida familiar y comunitaria. Allí se cocina, conversa y trabaja.'},
   hearth:{cat:'domestico',kind:'obj',ico:'🔥',mapu:'Kütral',es:'Fogón',desc:'El fogón entrega calor y permite cocinar. También reúne a las personas.'},
   metawe:{cat:'domestico',kind:'obj',ico:'🏺',mapu:'Metawe',es:'Jarro',desc:'El metawe es una vasija usada para guardar o servir líquidos.'},
-  fence:{cat:'domestico',kind:'obj',ico:'🚧',mapu:'Malal',es:'Cerco',desc:'El malal permite delimitar y proteger espacios domésticos o productivos.'},
+  fence:{cat:'domestico',kind:'obj',ico:'🪵',mapu:'Malal',es:'Empalizada',desc:'El malal se representa como una empalizada cerrada que delimita y protege un espacio doméstico o productivo.'},
   chicken:{cat:'domestico',kind:'obj',ico:'🐔',mapu:'Achawall',es:'Gallina',desc:'La gallina forma parte de la vida doméstica en épocas históricas.'},
   camelid:{cat:'domestico',kind:'obj',ico:'🦙',mapu:'Chiliweke',es:'Camélido',desc:'El chiliweke fue un animal doméstico importante antes de la llegada europea.'},
 
@@ -215,49 +216,80 @@ const pieces={
   lonko:{cat:'social',kind:'obj',ico:'🪶',mapu:'Lonko',es:'Autoridad tradicional',desc:'El lonko es una autoridad tradicional que orienta y representa a su comunidad.'}
 };
 
-let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=false, pieceRotation=0;
+let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=false;
 const app=$('#app'), scene=new THREE.Scene();
-scene.fog=new THREE.Fog(0xdbe7d7,25,62);
+scene.fog=new THREE.Fog(0xd9e5d2,38,85);
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,1000);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'default'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.2));
 renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=false;
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.NoToneMapping;
 renderer.domElement.style.touchAction='none';
 app.insertBefore(renderer.domElement,app.firstChild);
 
-scene.add(new THREE.HemisphereLight(0xd7ecf7,0x6e5c3f,1.05));
-const sun=new THREE.DirectionalLight(0xfff2d4,.75);sun.position.set(14,20,8);scene.add(sun);
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshLambertMaterial({color:0x8faf61}));
+scene.add(new THREE.HemisphereLight(0xe9f4f7,0x70583b,.86));
+const sun=new THREE.DirectionalLight(0xffedc7,.72);sun.position.set(14,20,8);scene.add(sun);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshStandardMaterial({color:0x9ab36d,roughness:1}));
 ground.rotation.x=-Math.PI/2;ground.position.y=-.51;scene.add(ground);
 
 const boxGeo=new THREE.BoxGeometry(1,1,1), world=new Map(), targets=[], undoStack=[], animated=[];
 const key=(i,j,k)=>`${i},${j},${k}`;
-function mat(c,transparent=false){const m=new THREE.MeshLambertMaterial({color:c,transparent,opacity:transparent?.74:1});m.flatShading=true;return m}
-const mats={grass:mat(0x72a34e),earth:mat(0x84582f),water:mat(0x389bc2,true)};
+function mat(c,transparent=false,opacity=.74){
+  return new THREE.MeshStandardMaterial({color:c,transparent,opacity:transparent?opacity:1,flatShading:true,roughness:.88,metalness:0});
+}
+const tileGeo=new THREE.BoxGeometry(.96,.96,.96);
+const tilePalette={
+  grass:{top:0x78aa51,side:0x735137,bottom:0x493222},
+  earth:{top:0x9a714a,side:0x704a2c,bottom:0x493222},
+  water:{top:0x55acd0,side:0x4d8298,bottom:0x315867}
+};
+const tileMats={};
+function materialsForTile(type){
+  if(tileMats[type])return tileMats[type];
+  const p=tilePalette[type],side=mat(p.side),bottom=mat(p.bottom),top=mat(p.top,type==='water',.86);
+  tileMats[type]=[side,side,top,bottom,side,side];
+  return tileMats[type];
+}
+function tile(type){
+  const m=new THREE.Mesh(tileGeo,materialsForTile(type));
+  m.userData.tileType=type;
+  return m;
+}
 function part(geo,color,x=0,y=0,z=0,rx=0,ry=0,rz=0){
   const m=new THREE.Mesh(geo,mat(color));m.position.set(x,y,z);m.rotation.set(rx,ry,rz);return m;
 }
 function ellipsoid(color,x,y,z,sx,sy,sz){
-  const m=part(new THREE.SphereGeometry(1,9,7),color,x,y,z);m.scale.set(sx,sy,sz);return m;
+  const m=part(new THREE.SphereGeometry(1,12,8),color,x,y,z);m.scale.set(sx,sy,sz);return m;
+}
+function contactShadow(radius=.46,opacity=.18,x=0,z=0){
+  const m=new THREE.Mesh(new THREE.CircleGeometry(radius,20),new THREE.MeshBasicMaterial({color:0x2d241b,transparent:true,opacity,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.position.set(x,.012,z);return m;
 }
 function human(opts={}){
-  const o=Object.assign({clothes:0x5e7049,accent:0xc28b3d,pants:0x33251d,hair:0x241914,skin:0xb77c55,scale:1,skirt:false,poncho:false,grayHair:false,headband:false,staff:false,drum:false,feather:false},opts);
+  const o=Object.assign({clothes:0x5e7049,accent:0xc28b3d,pants:0x33251d,hair:0x241914,skin:0xb77c55,scale:1,skirt:false,poncho:false,grayHair:false,headband:false,staff:false,drum:false},opts);
   const g=new THREE.Group();g.scale.setScalar(o.scale);
   g.add(part(new THREE.BoxGeometry(.105,.34,.13),o.pants,-.09,.19,0));
   g.add(part(new THREE.BoxGeometry(.105,.34,.13),o.pants,.09,.19,0));
+  g.add(ellipsoid(0x30231c,-.09,.035,.045,.09,.035,.15));
+  g.add(ellipsoid(0x30231c,.09,.035,.045,.09,.035,.15));
   if(o.skirt)g.add(part(new THREE.ConeGeometry(.28,.52,7),o.clothes,0,.48,0));
   else g.add(part(new THREE.CylinderGeometry(.18,.23,.46,7),o.clothes,0,.57,0));
   g.add(part(new THREE.CylinderGeometry(.045,.055,.38,6),o.skin,-.23,.59,0,0,0,-.12));
   g.add(part(new THREE.CylinderGeometry(.045,.055,.38,6),o.skin,.23,.59,0,0,0,.12));
-  if(o.poncho)g.add(part(new THREE.BoxGeometry(.5,.28,.12),o.accent,0,.66,.1));
+  if(o.poncho){
+    g.add(part(new THREE.BoxGeometry(.5,.28,.14),o.accent,0,.66,.08));
+    g.add(part(new THREE.BoxGeometry(.5,.045,.155),0xf0d7a0,0,.63,.09));
+  }
   g.add(ellipsoid(o.grayHair?0xd6d0c5:o.hair,0,.96,-.025,.165,.175,.15));
   g.add(ellipsoid(o.skin,0,.95,.055,.14,.145,.125));
   g.add(part(new THREE.ConeGeometry(.025,.07,5),0x8d553b,.14,.94,.075,0,0,-Math.PI/2));
+  g.add(ellipsoid(0x211a17,-.052,.985,.166,.012,.014,.009));
+  g.add(ellipsoid(0x211a17,.052,.985,.166,.012,.014,.009));
   if(o.headband)g.add(part(new THREE.BoxGeometry(.31,.055,.19),o.accent,0,1.025,.015));
   if(o.staff)g.add(part(new THREE.CylinderGeometry(.023,.028,.96,6),0x5a3a22,.34,.48,0,0,0,.04));
   if(o.drum)g.add(part(new THREE.CylinderGeometry(.14,.15,.09,14),0xa9702f,.25,.52,.2,Math.PI/2,0,0));
-  if(o.feather)g.add(part(new THREE.ConeGeometry(.035,.3,6),0xf4eee0,.08,1.22,0,0,0,-.15));
   return g;
 }
 function quadruped(type){
@@ -270,9 +302,14 @@ function quadruped(type){
   g.add(ellipsoid(spec.body,0,.49,0,.42,.24,.22));
   g.add(ellipsoid(spec.body,.38,.63,0,.19,.18,.17));
   g.add(ellipsoid(spec.mark,.5,.59,0,.11,.08,.12));
-  [[-.23,.13],[-.23,-.13],[.2,.13],[.2,-.13]].forEach(p=>g.add(part(new THREE.CylinderGeometry(.035,.045,.38,6),spec.body,p[0],.2,p[1])));
+  [[-.23,.13],[-.23,-.13],[.2,.13],[.2,-.13]].forEach(p=>{
+    g.add(part(new THREE.CylinderGeometry(.035,.045,.38,6),spec.body,p[0],.2,p[1]));
+    g.add(ellipsoid(0x3b2b22,p[0]+.035,.025,p[1],.075,.03,.055));
+  });
   g.add(part(new THREE.ConeGeometry(.065,.18,5),spec.body,.35,.83,.105,0,0,-.1));
   g.add(part(new THREE.ConeGeometry(.065,.18,5),spec.body,.35,.83,-.105,0,0,-.1));
+  g.add(ellipsoid(0x1e1815,.49,.69,.105,.018,.022,.014));
+  g.add(ellipsoid(0x1e1815,.49,.69,-.105,.018,.022,.014));
   if(type==='puma'){
     g.add(part(new THREE.CylinderGeometry(.045,.065,.52,7),spec.body,-.47,.58,0,0,0,-1.05));
     g.add(ellipsoid(spec.mark,0,.43,.19,.25,.07,.05));
@@ -290,11 +327,15 @@ function quadruped(type){
 function bird(type){
   const condor=type==='condor',body=condor?0x24211d:0x795431,accent=condor?0xf1eee8:0xc69a66;
   const g=new THREE.Group();g.scale.setScalar(condor?1:.78);
+  g.add(ellipsoid(0x72604d,0,.1,0,.27,.12,.22));
+  g.add(part(new THREE.CylinderGeometry(.018,.024,.23,5),0xb98632,-.07,.27,.04));
+  g.add(part(new THREE.CylinderGeometry(.018,.024,.23,5),0xb98632,.07,.27,.04));
   g.add(ellipsoid(body,0,.52,0,.22,.26,.18));
   g.add(ellipsoid(body,-.27,.56,0,.33,.055,.2));
   g.add(ellipsoid(body,.27,.56,0,.33,.055,.2));
   g.add(ellipsoid(accent,.13,.7,0,.11,.12,.1));
   g.add(part(new THREE.ConeGeometry(.055,.18,5),0xd89a35,.27,.69,0,0,0,-Math.PI/2));
+  g.add(ellipsoid(0x16130f,.19,.74,.082,.016,.018,.012));
   if(condor)g.add(part(new THREE.TorusGeometry(.12,.035,6,12),0xf4f0e7,.08,.66,0,Math.PI/2,0,0));
   else g.add(ellipsoid(0xe8d5ad,0,.48,.17,.13,.16,.045));
   return g;
@@ -302,60 +343,93 @@ function bird(type){
 function camelid(){
   const g=new THREE.Group();
   g.add(ellipsoid(0xd5b98b,-.05,.51,0,.4,.25,.21));
-  [[-.23,.13],[-.23,-.13],[.18,.13],[.18,-.13]].forEach(p=>g.add(part(new THREE.CylinderGeometry(.035,.045,.42,6),0xb89363,p[0],.21,p[1])));
+  [[-.23,.13],[-.23,-.13],[.18,.13],[.18,-.13]].forEach(p=>{
+    g.add(part(new THREE.CylinderGeometry(.035,.045,.42,6),0xb89363,p[0],.21,p[1]));
+    g.add(ellipsoid(0x59402d,p[0]+.025,.025,p[1],.065,.028,.05));
+  });
   g.add(part(new THREE.CylinderGeometry(.075,.105,.62,7),0xd5b98b,.3,.76,0,0,0,-.16));
   g.add(ellipsoid(0xcaa978,.38,1.04,0,.16,.13,.13));
   g.add(part(new THREE.ConeGeometry(.045,.2,5),0xb89363,.35,1.22,.07,0,0,-.08));
   g.add(part(new THREE.ConeGeometry(.045,.2,5),0xb89363,.35,1.22,-.07,0,0,-.08));
   g.add(part(new THREE.ConeGeometry(.07,.22,6),0xb89363,-.45,.62,0,0,0,-Math.PI/2));
+  g.add(ellipsoid(0x211a17,.49,1.08,.075,.015,.018,.012));
+  g.add(ellipsoid(0x211a17,.49,1.08,-.075,.015,.018,.012));
+  return g;
+}
+function palisade(){
+  const g=new THREE.Group(),stakeColor=0x78502e,tipColor=0xa97643,ropeColor=0xc39a63;
+  const stake=(x,z)=>{
+    g.add(part(new THREE.CylinderGeometry(.072,.086,.68,8),stakeColor,x,.35,z));
+    g.add(part(new THREE.ConeGeometry(.087,.17,8),tipColor,x,.775,z));
+  };
+  [-.32,-.105,.105,.32].forEach(v=>{stake(v,-.37);stake(v,.37)});
+  [-.12,.12].forEach(v=>{stake(-.37,v);stake(.37,v)});
+  [-.37,.37].forEach(z=>{
+    g.add(part(new THREE.BoxGeometry(.8,.045,.045),ropeColor,0,.31,z));
+    g.add(part(new THREE.BoxGeometry(.8,.045,.045),ropeColor,0,.54,z));
+  });
+  [-.37,.37].forEach(x=>{
+    g.add(part(new THREE.BoxGeometry(.045,.045,.8),ropeColor,x,.31,0));
+    g.add(part(new THREE.BoxGeometry(.045,.045,.8),ropeColor,x,.54,0));
+  });
   return g;
 }
 function build(type){
   const g=new THREE.Group();
+  const largePiece=type==='ruka'||type==='fence',shadowRadius=largePiece ? .59 : type==='forest'||type==='kuel' ? .54 : .42;
+  if(type!=='wetland')g.add(contactShadow(shadowRadius,largePiece ? .22 : .17));
   if(type==='wetland'){
-    g.add(part(new THREE.BoxGeometry(.95,.08,.95),0x4c8870,0,.04,0));
-    for(let a=0;a<7;a++){const x=-.36+(a%4)*.24,z=-.3+Math.floor(a/4)*.42;g.add(part(new THREE.CylinderGeometry(.018,.026,.48,5),0x4c7b37,x,.25,z))}
-    g.add(part(new THREE.SphereGeometry(.08,7,6),0xe4a7c4,.18,.16,.1));
+    g.add(part(new THREE.CylinderGeometry(.5,.52,.08,16),0x4f968f,0,.04,0));
+    for(let a=0;a<8;a++){const x=-.34+(a%4)*.22,z=-.27+Math.floor(a/4)*.5;g.add(part(new THREE.CylinderGeometry(.018,.026,.48,6),0x4f843c,x,.25,z))}
+    g.add(part(new THREE.SphereGeometry(.08,8,6),0xe4a7c4,.18,.16,.1));
   } else if(type==='forest'){
     [[-.28,0],[.24,.1],[0,-.24]].forEach((p,i)=>{
-      g.add(part(new THREE.CylinderGeometry(.07,.1,.68,6),0x6a4323,p[0],.34,p[1]));
-      g.add(part(new THREE.IcosahedronGeometry(.32,0),i%2?0x4f8e3d:0x3e7835,p[0],.84,p[1]));
+      g.add(part(new THREE.CylinderGeometry(.07,.11,.68,7),0x704827,p[0],.34,p[1]));
+      g.add(part(new THREE.DodecahedronGeometry(.31,0),i%2?0x568f43:0x407b38,p[0],.82,p[1]));
+      g.add(part(new THREE.DodecahedronGeometry(.23,0),i%2?0x6ba351:0x4d8b40,p[0]-.08,.99,p[1]+.03));
     });
-  } else if(type==='hill'){g.add(part(new THREE.ConeGeometry(.74,.88,12),0x65834c,0,.44,0))}
+  } else if(type==='hill'){
+    g.add(part(new THREE.CylinderGeometry(.69,.78,.18,12),0x617f49,0,.09,0));
+    g.add(part(new THREE.ConeGeometry(.66,.78,12),0x719252,0,.48,0));
+  }
   else if(type==='volcano'){
-    g.add(part(new THREE.ConeGeometry(.8,1.16,14),0x5a5449,0,.58,0));
-    g.add(part(new THREE.ConeGeometry(.3,.34,14),0xf2f4f5,0,1.01,0));
+    g.add(part(new THREE.CylinderGeometry(.72,.82,.16,14),0x58604d,0,.08,0));
+    g.add(part(new THREE.ConeGeometry(.75,1.05,14),0x65635a,0,.59,0));
+    g.add(part(new THREE.ConeGeometry(.31,.34,14),0xe8ece5,0,1.08,0));
+    g.add(part(new THREE.CylinderGeometry(.12,.18,.045,14),0x4a3c35,0,1.22,0));
   } else if(['puma','fox','pudu'].includes(type)){
     g.add(quadruped(type));
   } else if(['condor','hawk'].includes(type)){
     g.add(bird(type));
   } else if(type==='corn'||type==='potato'){
-    g.add(part(new THREE.BoxGeometry(.93,.11,.93),0x5b3d24,0,.055,0));
+    g.add(part(new THREE.BoxGeometry(.9,.1,.9),0x684529,0,.05,0));
     [[-.25,-.22],[.22,-.18],[-.04,.22],[.26,.24]].forEach((p,i)=>{
-      if(type==='potato')g.add(part(new THREE.IcosahedronGeometry(.15,0),0x4f8a3a,p[0],.23,p[1]));
-      else{g.add(part(new THREE.CylinderGeometry(.025,.035,.56,5),0x5c993a,p[0],.39,p[1]));g.add(part(new THREE.SphereGeometry(.08,6,6),0xf0c438,p[0],.69,p[1]))}
+      if(type==='potato'){
+        g.add(part(new THREE.DodecahedronGeometry(.15,0),0x568c41,p[0],.23,p[1]));
+        g.add(part(new THREE.DodecahedronGeometry(.09,0),0x6ca650,p[0]-.08,.31,p[1]));
+      }else{
+        g.add(part(new THREE.CylinderGeometry(.025,.035,.56,6),0x5c993a,p[0],.39,p[1]));
+        g.add(ellipsoid(0xf0c438,p[0],.59,p[1],.07,.16,.07));
+      }
     });
   } else if(type==='fishing'){
     g.add(part(new THREE.CylinderGeometry(.018,.018,.9,5),0x6b4828,0,.45,0,0,0,-.45));
     g.add(part(new THREE.TorusGeometry(.22,.015,5,12,Math.PI),0xddd6c7,.22,.28,0,0,0,.2));
   } else if(type==='ruka'){
-    g.add(part(new THREE.BoxGeometry(.95,.58,.74),0x79512f,0,.29,0));
-    g.add(part(new THREE.ConeGeometry(.82,.55,4),0xcaa14b,0,.88,0,0,Math.PI/4,0));
-    g.add(part(new THREE.BoxGeometry(.23,.34,.04),0x2b1c10,0,.17,.38));
+    g.add(part(new THREE.CylinderGeometry(.57,.64,.56,10),0x7b5637,0,.29,0));
+    g.add(part(new THREE.ConeGeometry(.82,.6,10),0xc49a4d,0,.86,0));
+    g.add(part(new THREE.BoxGeometry(.24,.36,.045),0x2f2118,0,.18,-.575));
+    g.add(part(new THREE.BoxGeometry(.34,.055,.055),0xd7b66d,0,.42,-.59));
   } else if(type==='hearth'){
-    g.add(part(new THREE.CylinderGeometry(.31,.34,.12,12),0x5f4b3d,0,.06,0));
-    g.add(part(new THREE.ConeGeometry(.14,.52,8),0xf08b22,0,.37,0));
+    for(let a=0;a<8;a++){const q=a*Math.PI/4;g.add(ellipsoid(0x6a5c50,Math.cos(q)*.25,.08,Math.sin(q)*.25,.1,.075,.08))}
+    g.add(part(new THREE.ConeGeometry(.15,.47,8),0xf08b22,0,.31,0));
+    g.add(part(new THREE.ConeGeometry(.08,.31,8),0xffc84b,.03,.3,.02));
   } else if(type==='metawe'){
     g.add(part(new THREE.SphereGeometry(.2,10,8),0xb96e45,0,.22,0));
     g.add(part(new THREE.CylinderGeometry(.08,.11,.16,9),0xb96e45,0,.43,0));
-  } else if(type==='fence'){
-    for(let i=-2;i<=2;i++){
-      g.add(part(new THREE.CylinderGeometry(.045,.055,.7,6),0x694728,i*.2,.35,0));
-      g.add(part(new THREE.ConeGeometry(.06,.12,6),0x8a623b,i*.2,.76,0));
-    }
-    g.add(part(new THREE.BoxGeometry(.92,.055,.055),0x5b3d22,0,.28,0));
-    g.add(part(new THREE.BoxGeometry(.92,.055,.055),0x5b3d22,0,.53,0));
-  } else if(type==='chicken'){
+    g.add(part(new THREE.TorusGeometry(.14,.025,6,12,Math.PI*1.65),0xb96e45,.13,.29,0,0,0,.45));
+  } else if(type==='fence')g.add(palisade());
+  else if(type==='chicken'){
     g.add(ellipsoid(0xb66e3d,0,.35,0,.23,.22,.18));
     g.add(ellipsoid(0xc7864e,.2,.53,0,.12,.13,.11));
     g.add(part(new THREE.ConeGeometry(.055,.16,5),0xe4a329,.34,.52,0,0,0,-Math.PI/2));
@@ -376,7 +450,7 @@ function build(type){
   else if(type==='child')g.add(human({clothes:0x3e83ad,accent:0xe0a03f,scale:.72,hair:0x352117}));
   else if(type==='elder')g.add(human({clothes:0x69586e,accent:0xc5a46c,scale:.9,grayHair:true,poncho:true,staff:true}));
   else if(type==='machi')g.add(human({clothes:0x315fa8,accent:0x1d2938,skirt:true,poncho:true,headband:true,drum:true,hair:0x161c22}));
-  else if(type==='lonko')g.add(human({clothes:0x49372d,accent:0xa94332,poncho:true,headband:true,staff:true,feather:true,hair:0x22170f}));
+  else if(type==='lonko')g.add(human({clothes:0x49372d,accent:0xa94332,poncho:true,headband:true,staff:true,hair:0x22170f}));
   return g;
 }
 function addTarget(m){targets.push(m)}
@@ -385,9 +459,11 @@ function place(i,j,k,type,rotation=0){
   if(i<0||k<0||i>=N||k>=N||j<0||j>=MAXY||world.has(key(i,j,k)))return null;
   const d=pieces[type];let mesh,collider;
   if(d.kind==='block'){
-    mesh=new THREE.Mesh(boxGeo,mats[type]);mesh.position.set(i,j,k);mesh.userData={i,j,k};scene.add(mesh);collider=mesh;addTarget(mesh);
+    mesh=tile(type);mesh.position.set(i,j,k);scene.add(mesh);
+    collider=new THREE.Mesh(boxGeo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
+    collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);
   }else{
-    mesh=build(type);mesh.position.set(i,j-.5,k);mesh.rotation.y=rotation*Math.PI/2;scene.add(mesh);
+    mesh=build(type);mesh.position.set(i,j-.5,k);scene.add(mesh);
     collider=new THREE.Mesh(boxGeo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
     collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);
     animated.push({mesh,baseY:mesh.position.y,baseRotation:mesh.rotation.y,phase:Math.random()*6.28,type});
@@ -427,7 +503,7 @@ function renderTabs(){
   const el=$('#tabs');el.innerHTML='';
   categories.forEach(([id,label])=>{
     const b=document.createElement('button');b.className='tab'+(category===id?' active':'');b.textContent=label;
-    b.onclick=()=>{category=id;selected=Object.keys(pieces).find(k=>pieces[k].cat===id);pieceRotation=0;deleting=false;renderTabs();renderItems()};
+    b.onclick=()=>{category=id;selected=Object.keys(pieces).find(k=>pieces[k].cat===id);deleting=false;renderTabs();renderItems()};
     el.appendChild(b);
   });
 }
@@ -439,7 +515,7 @@ function renderItems(){
     b.innerHTML=`<div class="itemIcon">${d.ico}</div><div class="itemName">${d.mapu}</div><div class="itemEs">${d.es}</div>`;
     b.onclick=()=>{
       if(locked){toast('Completa primero la misión 1');return}
-      selected=id;pieceRotation=0;deleting=false;renderItems();updateMode();
+      selected=id;deleting=false;renderItems();updateMode();
     };
     el.appendChild(b);
   });
@@ -449,8 +525,7 @@ function renderItems(){
   updateMode();
 }
 function updateMode(){
-  const orientation=pieceRotation?'E–O':'N–S';
-  $('#modeLabel').innerHTML=deleting?'Modo borrar · toca una pieza':pieces[selected].kind==='block'?`Estás cambiando el suelo a <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`:`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}${selected==='fence'?` · ${orientation}`:''}`;
+  $('#modeLabel').innerHTML=deleting?'Modo borrar · toca una pieza':pieces[selected].kind==='block'?`Estás cambiando el suelo a <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`:`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`;
 }
 renderTabs();renderItems();
 
@@ -510,7 +585,7 @@ function act(x,y){
     const normal=hit.face?hit.face.normal:new THREE.Vector3(0,1,0);
     const i=c.j===0?c.i:c.i+Math.round(normal.x),j=1,k=c.j===0?c.k:c.k+Math.round(normal.z);
     if(world.has(key(i,j,k))){toast('Ese espacio ya está ocupado');return}
-    if(place(i,j,k,selected,pieceRotation)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected)}
+    if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected)}
   }
   evaluate();
 }
@@ -550,7 +625,6 @@ $('#rotL').onclick=()=>{theta-=.34;updateCamera()};
 $('#rotR').onclick=()=>{theta+=.34;updateCamera()};
 $('#zin').onclick=()=>{radius-=2.3;updateCamera()};
 $('#zout').onclick=()=>{radius+=2.3;updateCamera()};
-$('#turnPiece').onclick=()=>{if(pieces[selected].kind==='block'){toast('El suelo no necesita giro');return}pieceRotation=(pieceRotation+1)%2;updateMode();toast(selected==='fence'?`Cerco orientado ${pieceRotation?'este–oeste':'norte–sur'}`:'Pieza girada')};
 $('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')remove(a.i,a.j,a.k);else if(a.op==='paint')paintGround(a.i,a.k,a.type);else place(a.i,a.j,a.k,a.type,a.rotation||0);evaluate()};
 $('#reset').onclick=()=>{
   if(!confirm('¿Empezar el paisaje nuevamente?'))return;
@@ -567,7 +641,7 @@ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updat
   requestAnimationFrame(loop);const t=performance.now()/1000;
   for(const a of animated){
     if(['puma','fox','pudu','condor','hawk','chicken','camelid','woman','man','child','elder','machi','lonko'].includes(a.type)){
-      a.mesh.position.y=a.baseY+Math.sin(t*2+a.phase)*.025;a.mesh.rotation.y=a.baseRotation+Math.sin(t*.5+a.phase)*.08;
+      a.mesh.position.y=a.baseY;a.mesh.rotation.y=a.baseRotation+Math.sin(t*.55+a.phase)*.035;
     }
   }
   renderer.render(scene,camera);
