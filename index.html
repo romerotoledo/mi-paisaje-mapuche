@@ -49,6 +49,7 @@ header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + va
 #infoIcon{font-size:46px}.infoTitle{font-size:23px;font-weight:900;margin-top:4px}.infoMapu{color:var(--red)}
 #infoText{font-size:14px;line-height:1.45;margin-top:8px}
 #freeMode{display:none;margin-top:10px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:900}
+.sourceNote{margin:10px 5px 2px;font-size:10px;line-height:1.35;color:#684f3c}
 footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8px + var(--safe-right)) calc(9px + var(--safe-bottom)) calc(8px + var(--safe-left));background:linear-gradient(transparent,rgba(55,37,25,.96) 23%)}
 #tabs,#items{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain}
 #tabs::-webkit-scrollbar,#items::-webkit-scrollbar{display:none}
@@ -140,6 +141,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
     <p>Agrega una ruka, tres personas, una chacra, animales domésticos y un espacio ceremonial.</p>
   </div>
   <button id="freeMode">Entrar al modo paisaje libre</button>
+  <p class="sourceNote">🔊 La pronunciación utiliza una guía sintetizada aproximada. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
 </section>
 
 <div id="helpChip">👆 Toca · ✋ Arrastra · 🤏 Pellizca</div>
@@ -176,7 +178,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
 const $=s=>document.querySelector(s), N=12, MAXY=8;
 const categories=[
   ['ambiental','🌿 Ambientales'],['silvestre','🦊 Silvestres'],['productivo','🌽 Productivos'],
-  ['domestico','🏠 Domésticos'],['ceremonial','🥁 Ceremoniales'],['social','👨‍👩‍👧 Sociales']
+  ['domestico','🏠 Domésticos'],['arquitectura','🏛️ Arquitectura'],['ceremonial','🥁 Ceremoniales'],['social','👨‍👩‍👧 Sociales']
 ];
 const pieces={
   grass:{cat:'ambiental',kind:'block',ico:'🌿',mapu:'Kachu',es:'Pasto',desc:'El pasto forma espacios abiertos donde viven y se desplazan animales y personas.',col:0x74a34f},
@@ -203,6 +205,8 @@ const pieces={
   fence:{cat:'domestico',kind:'obj',ico:'🪵',mapu:'Malal',es:'Empalizada',desc:'El malal se representa como una empalizada cerrada que delimita y protege un espacio doméstico o productivo.'},
   chicken:{cat:'domestico',kind:'obj',ico:'🐔',mapu:'Achawall',es:'Gallina',desc:'La gallina forma parte de la vida doméstica en épocas históricas.'},
   camelid:{cat:'domestico',kind:'obj',ico:'🦙',mapu:'Chiliweke',es:'Camélido',desc:'El chiliweke fue un animal doméstico importante antes de la llegada europea.'},
+
+  fort:{cat:'arquitectura',kind:'obj',ico:'🏰',mapu:'Malal',es:'Fuerte',desc:'El malal se representa aquí como un recinto fortificado, protegido por una empalizada cerrada y una entrada controlada. Su forma ayuda a comprender la defensa y delimitación de espacios.'},
 
   rewe:{cat:'ceremonial',kind:'obj',ico:'🪵',mapu:'Rewe',es:'Espacio ceremonial',desc:'El rewe forma parte de espacios ceremoniales y posee una importancia especial.'},
   kultrun:{cat:'ceremonial',kind:'obj',ico:'🥁',mapu:'Kultrung',es:'Tambor',desc:'El kultrung es un instrumento ceremonial asociado especialmente a la machi.'},
@@ -376,7 +380,7 @@ function palisade(){
 }
 function build(type){
   const g=new THREE.Group();
-  const largePiece=type==='ruka'||type==='fence',shadowRadius=largePiece ? .59 : type==='forest'||type==='kuel' ? .54 : .42;
+  const largePiece=type==='ruka'||type==='fence'||type==='fort',shadowRadius=largePiece ? .59 : type==='forest'||type==='kuel' ? .54 : .42;
   if(type!=='wetland')g.add(contactShadow(shadowRadius,largePiece ? .22 : .17));
   if(type==='wetland'){
     g.add(part(new THREE.CylinderGeometry(.5,.52,.08,16),0x4f968f,0,.04,0));
@@ -429,6 +433,13 @@ function build(type){
     g.add(part(new THREE.CylinderGeometry(.08,.11,.16,9),0xb96e45,0,.43,0));
     g.add(part(new THREE.TorusGeometry(.14,.025,6,12,Math.PI*1.65),0xb96e45,.13,.29,0,0,0,.45));
   } else if(type==='fence')g.add(palisade());
+  else if(type==='fort'){
+    g.add(part(new THREE.CylinderGeometry(.63,.72,.16,8),0x795232,0,.08,0));
+    const walls=palisade();walls.scale.set(.9,.9,.9);walls.position.y=.13;g.add(walls);
+    g.add(part(new THREE.BoxGeometry(.34,.1,.3),0x684329,-.22,.23,-.38,0,.18,0));
+    g.add(part(new THREE.BoxGeometry(.25,.1,.24),0x8c6037,-.3,.34,-.29,0,.18,0));
+    g.add(part(new THREE.ConeGeometry(.18,.45,6),0x6f4528,.28,.61,.27));
+  }
   else if(type==='chicken'){
     g.add(ellipsoid(0xb66e3d,0,.35,0,.23,.22,.18));
     g.add(ellipsoid(0xc7864e,.2,.53,0,.12,.13,.11));
@@ -514,6 +525,7 @@ function renderItems(){
     const b=document.createElement('button');b.className='item'+(!deleting&&selected===id?' selected':'')+(locked?' locked':'');
     b.innerHTML=`<div class="itemIcon">${d.ico}</div><div class="itemName">${d.mapu}</div><div class="itemEs">${d.es}</div>`;
     b.onclick=()=>{
+      pronounce(id);
       if(locked){toast('Completa primero la misión 1');return}
       selected=id;deleting=false;renderItems();updateMode();
     };
@@ -536,13 +548,37 @@ $('#info').onclick=()=>openInfo(selected);
 $('#freeMode').onclick=()=>{freeMode=true;$('#missionPanel').style.display='none';missionPanel=false;toast('Modo paisaje libre activado');renderItems()};
 function openInfo(id){
   const d=pieces[id];$('#infoIcon').textContent=d.ico;$('#infoMapu').textContent=d.mapu;$('#infoEs').textContent=d.es;$('#infoText').textContent=d.desc;$('#infoCard').style.display='block';
+  pronounce(id);
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2100)}
+const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',woman:'Do-mo',man:'Wen-tru',child:'Pi-chi che',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
+let audioCtx=null,musicTimer=null,musicStep=0;
+function getAudioContext(){
+  const AudioEngine=window.AudioContext||window.webkitAudioContext;if(!AudioEngine)return null;
+  if(!audioCtx)audioCtx=new AudioEngine();
+  if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx;
+}
+function tone(freq,when,duration,volume,type='sine'){
+  const ctx=getAudioContext();if(!ctx)return;const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(volume,when+.035);g.gain.exponentialRampToValueAtTime(.0001,when+duration);o.connect(g);g.connect(ctx.destination);o.start(when);o.stop(when+duration+.03);
+}
+function musicPulse(){
+  if(!soundOn||!audioCtx)return;const now=audioCtx.currentTime+.02,notes=[196,220,247,220,174,196];
+  tone(notes[musicStep%notes.length],now,1.7,.012,'sine');
+  if(musicStep%2===0){tone(82,now,.18,.022,'triangle');tone(62,now+.3,.12,.012,'sine')}
+  musicStep++;
+}
+function startMusic(){if(!soundOn||musicTimer)return;if(!getAudioContext())return;musicPulse();musicTimer=setInterval(musicPulse,2400)}
+function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}}
+function pronounce(id){
+  if(!soundOn||!pieces[id])return;startMusic();
+  if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(pronunciations[id]||pieces[id].mapu);u.lang='es-CL';u.rate=.68;u.pitch=.92;u.volume=.9;speechSynthesis.speak(u)}
+}
 function beep(freq=520,d=.08){
   if(!soundOn)return;
-  try{const ctx=new (window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=freq;g.gain.value=.035;o.connect(g);g.connect(ctx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);o.stop(ctx.currentTime+d)}catch{}
+  try{tone(freq,getAudioContext().currentTime,d,.035,'sine')}catch{}
 }
-$('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'🔊':'🔇';toast(soundOn?'Sonido activado':'Sonido desactivado')};
+$('#sound').setAttribute('aria-label','Pronunciación y música');
+$('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'🔊':'🔇';if(soundOn){startMusic();pronounce(selected)}else{stopMusic();if('speechSynthesis'in window)speechSynthesis.cancel()}toast(soundOn?'Pronunciación y música activadas':'Sonido desactivado')};
 
 function countTypes(){const c={};world.forEach(r=>c[r.type]=(c[r.type]||0)+1);return c}
 function evaluate(silent=false){
