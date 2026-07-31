@@ -50,6 +50,10 @@ for (const id of ["machi", "lonko", "rewe", "kultrun", "kuel", "foye"]) {
 }
 assert.doesNotMatch(html, /(?:machi|lonko):\{cat:'social'/);
 assert.doesNotMatch(html, /child:\{cat:'social'/);
+const piecesSource = html.slice(html.indexOf("const pieces={"), html.indexOf("let category="));
+const categoryIds = category => [...piecesSource.matchAll(new RegExp(`(\\w+):\\{cat:'${category}'`, "g"))].map(match => match[1]).sort();
+assert.deepEqual(categoryIds("social"), ["boy", "elder", "girl", "man", "woman"]);
+assert.deepEqual(categoryIds("ceremonial"), ["foye", "kuel", "kultrun", "lonko", "machi", "rewe"]);
 assert.match(html, /mapu:'Lonko',es:'Autoridad comunitaria'/);
 assert.match(html, /mapu:'Foye',es:'Canelo'/);
 assert.match(html, /function palisade\(\)/);
@@ -81,8 +85,14 @@ assert.match(html, /function animateEntry\(/);
 assert.match(html, /function createClouds\(/);
 assert.match(html, /function resetClouds\(/);
 assert.match(html, /const smokeGeometry=/);
+assert.match(html, /lowPowerDevice\?3:4/);
+assert.match(html, /const count=lowPowerDevice\?2:3/);
 assert.match(html, /clearIndicatorsForMesh\(r\.mesh\)/);
 assert.match(html, /animated\.splice\(a,1\)/);
+assert.match(html, /resetLandscapeFeedback\(\);clearAllIndicators\(\);resetClouds\(\)/);
+assert.match(html, /const feedbackTimes=new Map\(\)/);
+assert.match(html, /now-previous<cooldown/);
+assert.match(html, /now-lastFeedbackAt<2600/);
 assert.match(html, /renderer\.shadowMap\.enabled=false/);
 assert.match(html, /Math\.min\(devicePixelRatio,1\.2\)/);
 assert.doesNotMatch(html, /setPointerCapture/);

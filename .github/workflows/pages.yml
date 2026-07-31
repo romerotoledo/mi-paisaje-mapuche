@@ -25,7 +25,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate static site
-        run: node tests/validate.mjs
+        run: |
+          node tests/validate.mjs
+          node tests/relations.test.cjs
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
