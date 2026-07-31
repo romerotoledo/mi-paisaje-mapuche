@@ -334,6 +334,14 @@ function remove(i,j,k){
   scene.remove(r.mesh);removeTarget(r.collider);if(r.collider!==r.mesh)scene.remove(r.collider);
   world.delete(key(i,j,k));return r.type;
 }
+function paintGround(i,k,type){
+  if(!pieces[type]||pieces[type].kind!=='block')return null;
+  const current=world.get(key(i,0,k));if(!current||current.type===type)return null;
+  const previous=current.type;
+  remove(i,0,k);
+  if(place(i,0,k,type))return previous;
+  place(i,0,k,previous);return null;
+}
 function initialWorld(){
   for(let i=0;i<N;i++)for(let k=0;k<N;k++)place(i,0,k,'grass');
   [[9,2],[10,2],[9,3],[10,3],[10,4]].forEach(([i,k])=>{remove(i,0,k);place(i,0,k,'water')});
@@ -375,7 +383,7 @@ function renderItems(){
   updateMode();
 }
 function updateMode(){
-  $('#modeLabel').innerHTML=deleting?'Modo borrar · toca una pieza':`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`;
+  $('#modeLabel').innerHTML=deleting?'Modo borrar · toca una pieza':pieces[selected].kind==='block'?`Estás cambiando el suelo a <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`:`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`;
 }
 renderTabs();renderItems();
 
@@ -428,6 +436,9 @@ function act(x,y){
   if(deleting){
     if(c.j===0){toast('La base del paisaje no se borra');return}
     const type=remove(c.i,c.j,c.k);if(type)undoStack.push({op:'add',i:c.i,j:c.j,k:c.k,type});
+  }else if(pieces[selected].kind==='block'){
+    const previous=paintGround(c.i,c.k,selected);
+    if(previous){undoStack.push({op:'paint',i:c.i,k:c.k,type:previous});beep(470,.05);openInfoOnce(selected)}
   }else{
     const normal=hit.face?hit.face.normal:new THREE.Vector3(0,1,0);
     const i=c.i+Math.round(normal.x),j=c.j+Math.round(normal.y),k=c.k+Math.round(normal.z);
@@ -471,7 +482,7 @@ $('#rotL').onclick=()=>{theta-=.34;updateCamera()};
 $('#rotR').onclick=()=>{theta+=.34;updateCamera()};
 $('#zin').onclick=()=>{radius-=2.3;updateCamera()};
 $('#zout').onclick=()=>{radius+=2.3;updateCamera()};
-$('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')remove(a.i,a.j,a.k);else place(a.i,a.j,a.k,a.type);evaluate()};
+$('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')remove(a.i,a.j,a.k);else if(a.op==='paint')paintGround(a.i,a.k,a.type);else place(a.i,a.j,a.k,a.type);evaluate()};
 $('#reset').onclick=()=>{
   if(!confirm('¿Empezar el paisaje nuevamente?'))return;
   [...world.keys()].forEach(k=>{const [i,j,l]=k.split(',').map(Number);remove(i,j,l)});
