@@ -22,6 +22,7 @@ for (const match of html.matchAll(/\b(?:src|href)=["']([^"']+)["']/gi)) {
 }
 
 for (const asset of [
+  "relations.js",
   "assets/institucional/anid.svg",
   "assets/institucional/universidad-autonoma.png",
 ]) {
@@ -61,6 +62,14 @@ assert.match(html, /function pronounce\(id\)/);
 assert.match(html, /SpeechSynthesisUtterance/);
 assert.match(html, /function startMusic\(\)/);
 assert.match(html, /guía sintetizada aproximada/);
+assert.match(html, /src="\.\/relations\.js"/);
+for (const fn of [
+  "getObjectsByType", "getObjectsByCategory", "gridDistance", "isNear",
+  "isNearAny", "countNearby", "getNearbyObjects", "evaluateMalalProtection",
+  "evaluateLandscapeRelations", "getRelationScore", "showLandscapeFeedback",
+]) {
+  assert.match(html, new RegExp(`function ${fn}\\(`), `${fn} debe existir`);
+}
 assert.doesNotMatch(html, /id="turnPiece"/);
 assert.doesNotMatch(html, /pieceRotation/);
 assert.match(html, /j=1,k=/);

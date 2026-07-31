@@ -38,6 +38,7 @@ header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + va
 .badge{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--ochre);color:#fff;flex:none}
 .missionCard.done{opacity:.62}.missionCard.done .badge{background:var(--green)}
 .missionCard p{margin:6px 0 0 37px;font-size:13px;line-height:1.35}
+.missionValue{margin:6px 0 0 37px;color:var(--green2);font-size:11px;font-weight:900;line-height:1.3}
 #helpChip{position:absolute;z-index:12;left:50%;top:calc(69px + var(--safe-top));transform:translateX(-50%);max-width:58vw;border:2px solid var(--earth);border-radius:999px;background:var(--panel);box-shadow:var(--shadow);padding:7px 12px;font-size:11px;font-weight:900;text-align:center;transition:opacity .4s}
 #controls{position:absolute;z-index:14;right:calc(10px + var(--safe-right));top:calc(65px + var(--safe-top));display:flex;flex-direction:column;gap:7px}
 .ctrl{width:47px;height:47px;border:2px solid rgba(97,69,47,.24);border-radius:15px;background:linear-gradient(#fffdf6,#f2e6cc);box-shadow:0 5px 14px rgba(28,20,14,.22),inset 0 1px 0 #fff;font-size:21px;font-weight:900;touch-action:manipulation}
@@ -135,10 +136,12 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   <div class="missionCard" id="m1">
     <div class="missionHead"><span class="badge">1</span> Conociendo el paisaje</div>
     <p>Agrega agua, un volcán, un bosque, un humedal, un cerro y tres animales silvestres diferentes.</p>
+    <div class="missionValue" id="m1relation">El paisaje comienza a organizarse.</div>
   </div>
   <div class="missionCard" id="m2">
     <div class="missionHead"><span class="badge">2</span> El paisaje del lof</div>
     <p>Agrega una ruka, tres personas de la comunidad, una chacra, animales domésticos, un malal y un espacio ceremonial.</p>
+    <div class="missionValue" id="m2relation">El paisaje está comenzando a organizarse.</div>
   </div>
   <button id="freeMode">Entrar al modo paisaje libre</button>
   <p class="sourceNote">🔊 La pronunciación utiliza una guía sintetizada aproximada. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
@@ -174,6 +177,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="./relations.js"></script>
 <script>
 const $=s=>document.querySelector(s), N=12, MAXY=8;
 const categories=[
@@ -242,6 +246,24 @@ ground.rotation.x=-Math.PI/2;ground.position.y=-.51;scene.add(ground);
 
 const boxGeo=new THREE.BoxGeometry(1,1,1), world=new Map(), targets=[], undoStack=[], animated=[];
 const key=(i,j,k)=>`${i},${j},${k}`;
+function getLogicalObjects(){
+  const objects=[];
+  world.forEach((record,cell)=>{
+    const [i,j,k]=cell.split(',').map(Number),definition=pieces[record.type];
+    objects.push({type:record.type,category:definition?definition.cat:'',i,j,k,mesh:record.mesh,record});
+  });
+  return objects;
+}
+function getObjectsByType(type){return LandscapeRelations.getObjectsByType(getLogicalObjects(),type)}
+function getObjectsByCategory(category){return LandscapeRelations.getObjectsByCategory(getLogicalObjects(),category)}
+function gridDistance(a,b){return LandscapeRelations.gridDistance(a,b)}
+function isNear(typeA,typeB,maxDistance){return LandscapeRelations.isNear(getLogicalObjects(),typeA,typeB,maxDistance)}
+function isNearAny(type,targetTypes,maxDistance){return LandscapeRelations.isNearAny(getLogicalObjects(),type,targetTypes,maxDistance)}
+function countNearby(type,targetType,maxDistance){return LandscapeRelations.countNearby(getLogicalObjects(),type,targetType,maxDistance)}
+function getNearbyObjects(object,types,maxDistance){return LandscapeRelations.getNearbyObjects(getLogicalObjects(),object,types,maxDistance)}
+function evaluateMalalProtection(object){return LandscapeRelations.evaluateMalalProtection(object,getLogicalObjects())}
+function evaluateLandscapeRelations(){return LandscapeRelations.evaluateLandscapeRelations(getLogicalObjects())}
+function getRelationScore(object){return LandscapeRelations.getRelationScore(object,evaluateLandscapeRelations().relations)}
 function mat(c,transparent=false,opacity=.74){
   return new THREE.MeshStandardMaterial({color:c,transparent,opacity:transparent?opacity:1,flatShading:true,roughness:.88,metalness:0});
 }
@@ -560,6 +582,61 @@ function openInfo(id){
   pronounce(id);
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2100)}
+const feedbackTimes=new Map();let lastFeedbackAt=0,lastFeedbackPriority=-1;
+function showLandscapeFeedback(messageId,text,cooldown=16000,priority=1){
+  const now=Date.now(),previous=feedbackTimes.get(messageId)||0;
+  if(now-previous<cooldown)return false;
+  if(now-lastFeedbackAt<2600&&priority<=lastFeedbackPriority)return false;
+  feedbackTimes.set(messageId,now);lastFeedbackAt=now;lastFeedbackPriority=priority;toast(text);return true;
+}
+function resetLandscapeFeedback(){feedbackTimes.clear();lastFeedbackAt=0;lastFeedbackPriority=-1}
+function relationMessage(relation){
+  const type=relation.object.type,d=relation;
+  if(relation.id==='ruka-water')return relation.state==='good'?'🏡 La familia tiene acceso al río.':'Las viviendas suelen ubicarse cerca de fuentes de agua.';
+  if(relation.id==='pudu-forest')return relation.state==='good'?'🌿 Este lugar parece adecuado para el pudú.':'El pudú necesita refugio entre los árboles.';
+  if(relation.id==='wildlife-highlands')return relation.state==='good'?(type==='condor'?'🦅 Desde aquí el cóndor puede recorrer el paisaje.':'⛰️ Este animal encuentra un paisaje amplio cerca de los cerros.'):'Prueba acercar este animal a los cerros o volcanes.';
+  if(relation.id==='wetland-fauna')return relation.state==='good'?'🪷 El humedal reúne agua, plantas y fauna.':'Prueba acercar esta especie al humedal o al agua.';
+  if(relation.id==='domestic-ruka'){
+    if(relation.state!=='good')return 'Este elemento forma parte de la vida cotidiana. Prueba acercarlo a la ruka.';
+    if(type==='hearth')return '🔥 El fogón acompaña la vida de la ruka.';
+    if(type==='metawe')return '🏺 El metawe está cerca del espacio doméstico.';
+    if(type==='chicken')return '🐔 Las gallinas permanecen cerca del lugar habitado.';
+    return '🦙 El chiliweke permanece cerca del espacio habitado.';
+  }
+  if(relation.id==='crop-organization'){
+    if(d.score===0)return '¿Quién cuidará esta chacra? Intenta acercarla a la vivienda.';
+    if(d.score>=2)return '🌾 El espacio productivo comienza a organizarse.';
+    if(d.water)return '💧 La chacra tiene agua cerca.';
+    if(d.ruka)return '🌱 La chacra está cerca del espacio habitado.';
+    return '🌾 El cultivo está dentro de un espacio cuidado.';
+  }
+  if(relation.id==='malal-protection'){
+    if(d.state==='good')return type==='camelid'?'🦙 Los animales están protegidos por el malal.':type==='chicken'?'Ahora el espacio doméstico está protegido.':'🌾 El cultivo se encuentra dentro de un espacio cuidado.';
+    if(d.state==='progress')return '🌱 El espacio comienza a organizarse.';
+    return 'Los animales domésticos necesitan un espacio cuidado.';
+  }
+  if(relation.id==='ceremonial-cluster')return relation.state==='good'?(type==='foye'?'🌳 El foye acompaña el espacio ceremonial.':'🥁 Las personas y objetos ceremoniales se encuentran reunidos.'):'Prueba reunir los elementos ceremoniales en un mismo sector del paisaje.';
+  return '🌿 Las distintas partes del paisaje comienzan a relacionarse.';
+}
+function showRelationFeedback(type,i,k){
+  const objects=getLogicalObjects(),result=LandscapeRelations.evaluateLandscapeRelations(objects);
+  const focus=objects.find(object=>object.type===type&&object.i===i&&object.k===k);
+  let options=focus?result.relations.filter(item=>item.object===focus):[];
+  if(['water','forest','hill','volcano','fence','fort'].includes(type)){
+    const affected=result.relations.filter(item=>gridDistance(item.object,{i,k})<=4&&(
+      type==='water'?['ruka-water','crop-organization'].includes(item.id):
+      type==='forest'?item.id==='pudu-forest':
+      type==='hill'||type==='volcano'?item.id==='wildlife-highlands':item.id==='malal-protection'
+    ));
+    options=affected.length?affected:options;
+  }
+  const rank={good:3,progress:2,suggestion:1,missing:0};options.sort((a,b)=>rank[b.state]-rank[a.state]);
+  const chosen=options[0];
+  if(chosen)return showLandscapeFeedback(`${chosen.id}-${chosen.object.type}-${chosen.state}`,relationMessage(chosen),chosen.state==='good'?18000:26000,chosen.state==='good'?2:1);
+  const general={wetland:'🪷 El humedal reúne agua, plantas y fauna.',forest:'🌳 El bosque ofrece refugio a los animales.',hill:'⛰️ Los cerros ayudan a organizar y reconocer el paisaje.'}[type];
+  if(general)return showLandscapeFeedback(`general-${type}`,general,22000,1);
+  return false;
+}
 const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',foye:'Fo-ye',woman:'Do-mo',man:'Wen-tru',girl:'Pi-chi do-mo',boy:'Pi-chi wen-tru',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
 let audioCtx=null,musicTimer=null,musicStep=0;
 function getAudioContext(){
@@ -590,6 +667,19 @@ $('#sound').setAttribute('aria-label','Pronunciación y música');
 $('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'🔊':'🔇';if(soundOn){startMusic();pronounce(selected)}else{stopMusic();if('speechSynthesis'in window)speechSynthesis.cancel()}toast(soundOn?'Pronunciación y música activadas':'Sonido desactivado')};
 
 function countTypes(){const c={};world.forEach(r=>c[r.type]=(c[r.type]||0)+1);return c}
+function missionRelationAssessment(mission){
+  const relations=evaluateLandscapeRelations().relations;
+  const ids=mission===1?['pudu-forest','wildlife-highlands','wetland-fauna']:['ruka-water','domestic-ruka','crop-organization','malal-protection','ceremonial-cluster'];
+  const relevant=relations.filter(item=>ids.includes(item.id)),good=relevant.filter(item=>item.state==='good').length,progress=relevant.filter(item=>item.state==='progress').length;
+  if(mission===1){
+    if(good>=3)return 'El paisaje presenta buenas relaciones entre ambientes y animales.';
+    if(good>0)return 'Varias especies encontraron un ambiente adecuado.';
+    return 'El paisaje comienza a organizarse.';
+  }
+  if(good>=5)return 'El paisaje se encuentra equilibrado.';
+  if(good+progress>=2)return 'El lof presenta varias relaciones adecuadas.';
+  return 'El paisaje está comenzando a organizarse.';
+}
 function evaluate(silent=false){
   const c=countTypes();
   const fauna=['puma','fox','condor','pudu','hawk'].filter(x=>(c[x]||0)>0).length;
@@ -605,6 +695,7 @@ function evaluate(silent=false){
   $('#m2').classList.toggle('done',mission2Done);$('#m2 .badge').textContent=mission2Done?'✓':'2';
   $('#missionBtn').innerHTML=`🎯 Misiones <strong>${n}/2</strong>`;
   $('#freeMode').style.display=n===2?'block':'none';
+  $('#m1relation').textContent=missionRelationAssessment(1);$('#m2relation').textContent=missionRelationAssessment(2);
   if(!silent){
     if(mission1Done&&!$('#m1').dataset.announced){$('#m1').dataset.announced='1';toast('¡Küme! Completaste la misión 1');beep(660,.12);confetti(24);renderItems()}
     if(mission2Done&&!$('#m2').dataset.announced){$('#m2').dataset.announced='1';toast('🌈 ¡Completaste el paisaje del lof!');beep(820,.16);confetti(60)}
@@ -620,20 +711,20 @@ const raycaster=new THREE.Raycaster(),ndc=new THREE.Vector2();
 function ndcFrom(x,y){const r=renderer.domElement.getBoundingClientRect();ndc.x=((x-r.left)/r.width)*2-1;ndc.y=-((y-r.top)/r.height)*2+1}
 function act(x,y){
   ndcFrom(x,y);raycaster.setFromCamera(ndc,camera);const hit=raycaster.intersectObjects(targets,false)[0];if(!hit)return;
-  const c=hit.object.userData;
+  const c=hit.object.userData;let feedback=null;
   if(deleting){
     if(c.j===0){toast('La base del paisaje no se borra');return}
     const removed=remove(c.i,c.j,c.k);if(removed)undoStack.push({op:'add',i:c.i,j:c.j,k:c.k,type:removed.type,rotation:removed.rotation});
   }else if(pieces[selected].kind==='block'){
     const previous=paintGround(c.i,c.k,selected);
-    if(previous){undoStack.push({op:'paint',i:c.i,k:c.k,type:previous});beep(470,.05);openInfoOnce(selected)}
+    if(previous){undoStack.push({op:'paint',i:c.i,k:c.k,type:previous});beep(470,.05);openInfoOnce(selected);feedback={type:selected,i:c.i,k:c.k}}
   }else{
     const normal=hit.face?hit.face.normal:new THREE.Vector3(0,1,0);
     const i=c.j===0?c.i:c.i+Math.round(normal.x),j=1,k=c.j===0?c.k:c.k+Math.round(normal.z);
     if(world.has(key(i,j,k))){toast('Ese espacio ya está ocupado');return}
-    if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected)}
+    if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected);feedback={type:selected,i,k}}
   }
-  evaluate();
+  evaluate();if(feedback)showRelationFeedback(feedback.type,feedback.i,feedback.k);
 }
 const shownInfo=new Set();
 function openInfoOnce(id){if(!shownInfo.has(id)){shownInfo.add(id);openInfo(id)}}
@@ -675,7 +766,7 @@ $('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')
 $('#reset').onclick=()=>{
   if(!confirm('¿Empezar el paisaje nuevamente?'))return;
   [...world.keys()].forEach(k=>{const [i,j,l]=k.split(',').map(Number);remove(i,j,l)});
-  undoStack.length=0;shownInfo.clear();mission1Done=mission2Done=false;
+  undoStack.length=0;shownInfo.clear();resetLandscapeFeedback();mission1Done=mission2Done=false;
   delete $('#m1').dataset.announced;delete $('#m2').dataset.announced;initialWorld();evaluate(true);renderItems();toast('Paisaje reiniciado');
 };
 
