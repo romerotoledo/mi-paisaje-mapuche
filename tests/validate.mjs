@@ -41,11 +41,21 @@ for (const eventName of ["touchstart", "touchmove", "touchend", "touchcancel"]) 
 assert.match(html, /function paintGround\(i,k,type\)/);
 assert.match(html, /pieces\[selected\]\.kind==='block'/);
 assert.match(html, /op:'paint'/);
-assert.match(html, /lonko:\{cat:'social'/);
+for (const id of ["woman", "man", "girl", "boy", "elder"]) {
+  assert.match(html, new RegExp(`${id}:\\{cat:'social'`));
+}
+for (const id of ["machi", "lonko", "rewe", "kultrun", "kuel", "foye"]) {
+  assert.match(html, new RegExp(`${id}:\\{cat:'ceremonial'`));
+}
+assert.doesNotMatch(html, /(?:machi|lonko):\{cat:'social'/);
+assert.doesNotMatch(html, /child:\{cat:'social'/);
+assert.match(html, /mapu:'Lonko',es:'Autoridad comunitaria'/);
+assert.match(html, /mapu:'Foye',es:'Canelo'/);
 assert.match(html, /function palisade\(\)/);
 assert.match(html, /es:'Empalizada'/);
 assert.match(html, /fort:\{cat:'arquitectura'/);
-assert.match(html, /mapu:'Malal',es:'Fuerte'/);
+assert.match(html, /mapu:'Malal',es:'Recinto comunitario'/);
+assert.doesNotMatch(html, /recinto fortificado|fortificación|comprender la defensa/i);
 assert.match(html, /type==='fort'/);
 assert.match(html, /function pronounce\(id\)/);
 assert.match(html, /SpeechSynthesisUtterance/);
@@ -59,4 +69,4 @@ assert.match(html, /baseRotation:mesh\.rotation\.y/);
 assert.match(html, /a\.mesh\.position\.y=a\.baseY;/);
 assert.doesNotMatch(html, /a\.mesh\.position\.y=a\.baseY\+/);
 
-console.log("OK: HTML estático, Malal fuerte, pronunciación guiada, música original, recursos, controles táctiles y sintaxis JavaScript validados.");
+console.log("OK: HTML estático, Malal comunitario, pronunciación guiada, música original, recursos, controles táctiles y sintaxis JavaScript validados.");

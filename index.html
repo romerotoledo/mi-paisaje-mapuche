@@ -138,7 +138,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   </div>
   <div class="missionCard" id="m2">
     <div class="missionHead"><span class="badge">2</span> El paisaje del lof</div>
-    <p>Agrega una ruka, tres personas, una chacra, animales domésticos y un espacio ceremonial.</p>
+    <p>Agrega una ruka, tres personas de la comunidad, una chacra, animales domésticos, un malal y un espacio ceremonial.</p>
   </div>
   <button id="freeMode">Entrar al modo paisaje libre</button>
   <p class="sourceNote">🔊 La pronunciación utiliza una guía sintetizada aproximada. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
@@ -206,18 +206,20 @@ const pieces={
   chicken:{cat:'domestico',kind:'obj',ico:'🐔',mapu:'Achawall',es:'Gallina',desc:'La gallina forma parte de la vida doméstica en épocas históricas.'},
   camelid:{cat:'domestico',kind:'obj',ico:'🦙',mapu:'Chiliweke',es:'Camélido',desc:'El chiliweke fue un animal doméstico importante antes de la llegada europea.'},
 
-  fort:{cat:'arquitectura',kind:'obj',ico:'🏰',mapu:'Malal',es:'Fuerte',desc:'El malal se representa aquí como un recinto fortificado, protegido por una empalizada cerrada y una entrada controlada. Su forma ayuda a comprender la defensa y delimitación de espacios.'},
+  fort:{cat:'arquitectura',kind:'obj',ico:'🪵',mapu:'Malal',es:'Recinto comunitario',desc:'Este recinto de malal ayuda a delimitar y cuidar espacios de la vida comunitaria y productiva, sin representar una disposición única o universal.'},
 
   rewe:{cat:'ceremonial',kind:'obj',ico:'🪵',mapu:'Rewe',es:'Espacio ceremonial',desc:'El rewe forma parte de espacios ceremoniales y posee una importancia especial.'},
   kultrun:{cat:'ceremonial',kind:'obj',ico:'🥁',mapu:'Kultrung',es:'Tambor',desc:'El kultrung es un instrumento ceremonial asociado especialmente a la machi.'},
   kuel:{cat:'ceremonial',kind:'obj',ico:'⛰️',mapu:'Kuel',es:'Montículo',desc:'El kuel es un montículo de tierra vinculado con memoria, territorio y ceremonias.'},
+  foye:{cat:'ceremonial',kind:'obj',ico:'🌳',mapu:'Foye',es:'Canelo',desc:'El foye o canelo es un árbol de gran importancia ceremonial y medicinal.'},
+  machi:{cat:'ceremonial',kind:'obj',ico:'🥁',mapu:'Machi',es:'Autoridad espiritual',desc:'La machi cumple funciones espirituales y medicinales, y participa en ceremonias importantes para la comunidad.'},
+  lonko:{cat:'ceremonial',kind:'obj',ico:'🪶',mapu:'Lonko',es:'Autoridad comunitaria',desc:'El lonko cumple un papel de conducción, representación y organización dentro de la comunidad, y puede participar en encuentros y ceremonias. Sus funciones pueden variar según el territorio, el contexto y el periodo.'},
 
   woman:{cat:'social',kind:'obj',ico:'👩',mapu:'Domo',es:'Mujer',desc:'Las personas participan en la vida familiar, productiva, social y ceremonial.'},
   man:{cat:'social',kind:'obj',ico:'👨',mapu:'Wentru',es:'Hombre',desc:'Las personas participan en la vida familiar, productiva, social y ceremonial.'},
-  child:{cat:'social',kind:'obj',ico:'🧒',mapu:'Pichi che',es:'Niña o niño',desc:'Las niñas y los niños aprenden observando, jugando y participando en la vida comunitaria.'},
-  elder:{cat:'social',kind:'obj',ico:'🧓',mapu:'Fücha che',es:'Persona mayor',desc:'Las personas mayores conservan recuerdos, experiencias y conocimientos importantes.'},
-  machi:{cat:'social',kind:'obj',ico:'🥁',mapu:'Machi',es:'Autoridad espiritual',desc:'La machi cumple un papel espiritual y medicinal dentro de la comunidad.'},
-  lonko:{cat:'social',kind:'obj',ico:'🪶',mapu:'Lonko',es:'Autoridad tradicional',desc:'El lonko es una autoridad tradicional que orienta y representa a su comunidad.'}
+  girl:{cat:'social',kind:'obj',ico:'👧',mapu:'Pichi domo',es:'Niña',desc:'Las niñas aprenden observando, jugando y participando en la vida comunitaria.'},
+  boy:{cat:'social',kind:'obj',ico:'👦',mapu:'Pichi wentru',es:'Niño',desc:'Los niños aprenden observando, jugando y participando en la vida comunitaria.'},
+  elder:{cat:'social',kind:'obj',ico:'🧓',mapu:'Fücha che',es:'Persona mayor',desc:'Las personas mayores conservan recuerdos, experiencias y conocimientos importantes.'}
 };
 
 let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=false;
@@ -392,6 +394,12 @@ function build(type){
       g.add(part(new THREE.DodecahedronGeometry(.31,0),i%2?0x568f43:0x407b38,p[0],.82,p[1]));
       g.add(part(new THREE.DodecahedronGeometry(.23,0),i%2?0x6ba351:0x4d8b40,p[0]-.08,.99,p[1]+.03));
     });
+  } else if(type==='foye'){
+    g.add(part(new THREE.CylinderGeometry(.08,.12,.82,7),0x765035,0,.41,0));
+    g.add(part(new THREE.DodecahedronGeometry(.38,0),0x365f3d,0,.93,0));
+    g.add(part(new THREE.DodecahedronGeometry(.29,0),0x4b7b4b,-.12,1.16,.03));
+    g.add(part(new THREE.DodecahedronGeometry(.24,0),0x5d8e59,.16,1.12,-.03));
+    [[-.16,.98,.28],[.2,1.14,.2],[.05,1.29,.04]].forEach(p=>g.add(ellipsoid(0xf3eee0,p[0],p[1],p[2],.035,.025,.035)));
   } else if(type==='hill'){
     g.add(part(new THREE.CylinderGeometry(.69,.78,.18,12),0x617f49,0,.09,0));
     g.add(part(new THREE.ConeGeometry(.66,.78,12),0x719252,0,.48,0));
@@ -458,7 +466,8 @@ function build(type){
     g.add(part(new THREE.CylinderGeometry(.5,.8,.58,16),0x5f8a3c,0,.42,0));
   } else if(type==='woman')g.add(human({clothes:0x56385f,accent:0xc98c43,skirt:true,poncho:true,hair:0x201713}));
   else if(type==='man')g.add(human({clothes:0x496044,accent:0x8f4934,poncho:true,hair:0x2a1c15}));
-  else if(type==='child')g.add(human({clothes:0x3e83ad,accent:0xe0a03f,scale:.72,hair:0x352117}));
+  else if(type==='girl')g.add(human({clothes:0x7c4f82,accent:0xe0a03f,scale:.72,skirt:true,hair:0x352117}));
+  else if(type==='boy')g.add(human({clothes:0x3e83ad,accent:0xd98a37,scale:.72,hair:0x352117}));
   else if(type==='elder')g.add(human({clothes:0x69586e,accent:0xc5a46c,scale:.9,grayHair:true,poncho:true,staff:true}));
   else if(type==='machi')g.add(human({clothes:0x315fa8,accent:0x1d2938,skirt:true,poncho:true,headband:true,drum:true,hair:0x161c22}));
   else if(type==='lonko')g.add(human({clothes:0x49372d,accent:0xa94332,poncho:true,headband:true,staff:true,hair:0x22170f}));
@@ -551,7 +560,7 @@ function openInfo(id){
   pronounce(id);
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2100)}
-const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',woman:'Do-mo',man:'Wen-tru',child:'Pi-chi che',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
+const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',foye:'Fo-ye',woman:'Do-mo',man:'Wen-tru',girl:'Pi-chi do-mo',boy:'Pi-chi wen-tru',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
 let audioCtx=null,musicTimer=null,musicStep=0;
 function getAudioContext(){
   const AudioEngine=window.AudioContext||window.webkitAudioContext;if(!AudioEngine)return null;
@@ -585,11 +594,12 @@ function evaluate(silent=false){
   const c=countTypes();
   const fauna=['puma','fox','condor','pudu','hawk'].filter(x=>(c[x]||0)>0).length;
   mission1Done=(c.water||0)>0&&(c.volcano||0)>0&&(c.forest||0)>0&&(c.wetland||0)>0&&(c.hill||0)>0&&fauna>=3;
-  const persons=(c.woman||0)+(c.man||0)+(c.child||0)+(c.elder||0)+(c.machi||0)+(c.lonko||0);
+  const persons=(c.woman||0)+(c.man||0)+(c.girl||0)+(c.boy||0)+(c.elder||0);
   const crops=(c.corn||0)+(c.potato||0)+(c.fishing||0);
   const domestic=(c.chicken||0)+(c.camelid||0);
-  const ceremonial=(c.rewe||0)+(c.kultrun||0)+(c.kuel||0);
-  mission2Done=(c.ruka||0)>0&&persons>=3&&crops>0&&domestic>0&&ceremonial>0;
+  const malal=(c.fence||0)+(c.fort||0);
+  const ceremonial=(c.rewe||0)+(c.kultrun||0)+(c.kuel||0)+(c.foye||0)+(c.machi||0)+(c.lonko||0);
+  mission2Done=(c.ruka||0)>0&&persons>=3&&crops>0&&domestic>0&&malal>0&&ceremonial>0;
   const n=(mission1Done?1:0)+(mission2Done?1:0);
   $('#m1').classList.toggle('done',mission1Done);$('#m1 .badge').textContent=mission1Done?'✓':'1';
   $('#m2').classList.toggle('done',mission2Done);$('#m2 .badge').textContent=mission2Done?'✓':'2';
@@ -676,7 +686,7 @@ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updat
 (function loop(){
   requestAnimationFrame(loop);const t=performance.now()/1000;
   for(const a of animated){
-    if(['puma','fox','pudu','condor','hawk','chicken','camelid','woman','man','child','elder','machi','lonko'].includes(a.type)){
+    if(['puma','fox','pudu','condor','hawk','chicken','camelid','woman','man','girl','boy','elder','machi','lonko'].includes(a.type)){
       a.mesh.position.y=a.baseY;a.mesh.rotation.y=a.baseRotation+Math.sin(t*.55+a.phase)*.035;
     }
   }
