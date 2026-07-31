@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#3d2b1f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Paisaje mapuche móvil">
-<title>Mi paisaje mapuche · Prototipo móvil</title>
+<meta name="apple-mobile-web-app-title" content="Mi paisaje mapuche">
+<title>Mi paisaje mapuche</title>
 <style>
 :root{
   --earth:#61452f; --earth2:#2f241b; --cream:#fff8e9; --ochre:#d89a35;
@@ -40,8 +40,6 @@ header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + va
 .missionCard p{margin:6px 0 0 37px;font-size:13px;line-height:1.35}
 .missionValue{margin:6px 0 0 37px;color:var(--green2);font-size:11px;font-weight:900;line-height:1.3}
 #helpChip{position:absolute;z-index:12;left:50%;top:calc(69px + var(--safe-top));transform:translateX(-50%);max-width:58vw;border:2px solid var(--earth);border-radius:999px;background:var(--panel);box-shadow:var(--shadow);padding:7px 12px;font-size:11px;font-weight:900;text-align:center;transition:opacity .4s}
-#moveStatus{display:none;position:absolute;z-index:18;left:50%;top:calc(112px + var(--safe-top));transform:translateX(-50%);max-width:78vw;border:2px solid #2f6940;border-radius:999px;background:rgba(244,255,236,.97);box-shadow:var(--shadow);padding:8px 14px;color:#244a2e;font-size:12px;font-weight:900;text-align:center;pointer-events:none}
-#moveStatus.show{display:block}
 #controls{position:absolute;z-index:14;right:calc(10px + var(--safe-right));top:calc(65px + var(--safe-top));display:flex;flex-direction:column;gap:7px}
 .ctrl{width:47px;height:47px;border:2px solid rgba(97,69,47,.24);border-radius:15px;background:linear-gradient(#fffdf6,#f2e6cc);box-shadow:0 5px 14px rgba(28,20,14,.22),inset 0 1px 0 #fff;font-size:21px;font-weight:900;touch-action:manipulation}
 .ctrl:active{transform:scale(.92)}
@@ -87,7 +85,6 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   #controls{right:calc(18px + var(--safe-right));top:calc(78px + var(--safe-top))}
   .ctrl{width:54px;height:54px;font-size:25px}
   #helpChip{top:calc(81px + var(--safe-top));font-size:13px}
-  #moveStatus{top:calc(128px + var(--safe-top));font-size:13px}
   .tab{min-height:44px;font-size:13px}
   .item{flex-basis:90px;min-height:93px}
   .itemIcon{height:43px;font-size:28px}.itemName{font-size:14px}.itemEs{font-size:11px}
@@ -111,7 +108,6 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   #controls{top:calc(46px + var(--safe-top));flex-direction:row}
   .ctrl{width:44px;height:44px}
   #helpChip{display:none}
-  #moveStatus{top:calc(93px + var(--safe-top));max-width:60vw;font-size:10px;padding:6px 10px}
   #missionPanel{top:calc(96px + var(--safe-top));max-height:48vh}
   footer{padding-top:8px}.tab{min-height:31px;padding:4px 9px}.item{min-height:63px;flex-basis:64px}
   .itemIcon{height:27px;font-size:19px}#modeLabel{height:15px;font-size:11px}
@@ -123,7 +119,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
 <div class="topPattern"></div>
 <header>
   <div class="title">Mi paisaje mapuche 🌋</div>
-  <div class="subtitle">Prototipo: personas y animales recorren el lof</div>
+  <div class="subtitle">Conoce la naturaleza y la vida del lof</div>
 </header>
 <aside class="institutionalCredit" aria-label="Instituciones y financiamiento">
   <img class="institutionalLogo" src="./assets/institucional/anid.svg" alt="ANID, Agencia Nacional de Investigación y Desarrollo">
@@ -151,8 +147,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   <p class="sourceNote">🔊 Cada término se lee tal como está escrito, usando la voz española más natural disponible en el dispositivo. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
 </section>
 
-<div id="helpChip">👆 Toca un ser vivo para moverlo · ✋ Arrastra · 🤏 Pellizca</div>
-<div id="moveStatus" role="status" aria-live="polite"></div>
+<div id="helpChip">👆 Toca · ✋ Arrastra · 🤏 Pellizca</div>
 
 <div id="controls">
   <button class="ctrl" id="rotL" aria-label="Girar izquierda">⟲</button>
@@ -230,11 +225,8 @@ const pieces={
   boy:{cat:'social',kind:'obj',ico:'👦',mapu:'Pichi wentru',es:'Niño',desc:'Los niños aprenden observando, jugando y participando en la vida comunitaria.'},
   elder:{cat:'social',kind:'obj',ico:'🧓',mapu:'Fücha che',es:'Persona mayor',desc:'Las personas mayores conservan recuerdos, experiencias y conocimientos importantes.'}
 };
-const movableTypes=new Set(['puma','fox','condor','pudu','hawk','chicken','camelid','woman','man','girl','boy','elder','machi','lonko']);
-const flyingMovers=new Set(['condor','hawk']),animalMovers=new Set(['puma','fox','condor','pudu','hawk','chicken','camelid']);
-const humanMovers=new Set(['woman','man','girl','boy','elder','machi','lonko']);
 
-let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=true;
+let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=false;
 const app=$('#app'), scene=new THREE.Scene();
 const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
 let reducedMotion=motionPreference.matches,pageVisible=!document.hidden;
@@ -258,13 +250,7 @@ const sun=new THREE.DirectionalLight(0xffedc7,.72);sun.position.set(14,20,8);sce
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshStandardMaterial({color:0x9ab36d,roughness:1}));
 ground.rotation.x=-Math.PI/2;ground.position.y=-.51;scene.add(ground);
 
-const moverRing=new THREE.Mesh(new THREE.RingGeometry(.38,.52,24),new THREE.MeshBasicMaterial({color:0xf6cf4d,transparent:true,opacity:.92,side:THREE.DoubleSide,depthWrite:false}));
-moverRing.rotation.x=-Math.PI/2;moverRing.position.y=.035;moverRing.visible=false;scene.add(moverRing);
-const destinationRing=new THREE.Mesh(new THREE.RingGeometry(.28,.45,24),new THREE.MeshBasicMaterial({color:0x67bf65,transparent:true,opacity:.88,side:THREE.DoubleSide,depthWrite:false}));
-destinationRing.rotation.x=-Math.PI/2;destinationRing.position.y=.04;destinationRing.visible=false;scene.add(destinationRing);
-
-const boxGeo=new THREE.BoxGeometry(1,1,1), world=new Map(), targets=[], undoStack=[], animated=[],reservedDestinations=new Set();
-let selectedMover=null,activeMove=null;
+const boxGeo=new THREE.BoxGeometry(1,1,1), world=new Map(), targets=[], undoStack=[], animated=[];
 const key=(i,j,k)=>`${i},${j},${k}`;
 function getLogicalObjects(){
   const objects=[];
@@ -579,7 +565,6 @@ function resetAnimatedEntry(entry){
 }
 function animateEntry(entry,time,delta){
   if(reducedMotion){resetAnimatedEntry(entry);return}
-  if(entry.mesh.userData.isMoving)return;
   if(entry.type==='water'){
     const wave=Math.sin(time*.42+entry.phase);entry.mesh.position.y=entry.baseY+wave*.006;entry.mesh.scale.x=entry.mesh.scale.z=1+wave*.002;return;
   }
@@ -631,103 +616,6 @@ function animateEntry(entry,time,delta){
     }
   }
 }
-function getMoversAtCell(i,k,except=null){
-  const found=[];world.forEach(record=>{if(record!==except&&movableTypes.has(record.type)&&record.i===i&&record.k===k)found.push(record)});return found;
-}
-function getHostedMovers(i,k){return getMoversAtCell(i,k).filter(record=>record.host)}
-function hostAccepts(record,host){
-  if(!host)return false;
-  if(animalMovers.has(record.type))return host.type==='fence'||host.type==='fort';
-  if(humanMovers.has(record.type))return host.type==='ruka'||host.type==='fort';
-  return false;
-}
-function firstHostSlot(i,k){for(let j=2;j<MAXY;j++)if(!world.has(key(i,j,k)))return j;return null}
-function hostOffset(hostType,slot){
-  const index=Math.max(0,slot-2),inside=[[0,0],[-.24,.18],[.24,.18],[-.24,-.18],[.24,-.18],[0,.27]],home=[[-.3,-.48],[0,-.53],[.3,-.48],[-.42,-.32],[.42,-.32],[0,-.68]];
-  return (hostType==='ruka'?home:inside)[index%6];
-}
-function movementCellAvailable(record,i,k,isDestination=false,host=null){
-  if(i<0||k<0||i>=N||k>=N)return false;
-  const groundCell=world.get(key(i,0,k));if(!groundCell)return false;
-  if(!flyingMovers.has(record.type)&&groundCell.type==='water')return false;
-  if(reservedDestinations.has(key(i,0,k))&&!(record.i===i&&record.k===k))return false;
-  if(isDestination&&hostAccepts(record,host))return firstHostSlot(i,k)!==null;
-  if(getMoversAtCell(i,k,record).length)return false;
-  const object=world.get(key(i,1,k));return !object||object===record;
-}
-function findMovePath(record,destinationI,destinationK,host=null){
-  const start={i:record.i,k:record.k},finish={i:destinationI,k:destinationK};
-  if(flyingMovers.has(record.type))return [start,finish];
-  const queue=[start],seen=new Set([`${start.i},${start.k}`]),previous=new Map(),directions=[[1,0],[-1,0],[0,1],[0,-1]];
-  while(queue.length){
-    const current=queue.shift();if(current.i===finish.i&&current.k===finish.k)break;
-    for(const [di,dk] of directions){
-      const next={i:current.i+di,k:current.k+dk},id=`${next.i},${next.k}`,isDestination=next.i===finish.i&&next.k===finish.k;
-      if(seen.has(id)||!movementCellAvailable(record,next.i,next.k,isDestination,host))continue;
-      seen.add(id);previous.set(id,`${current.i},${current.k}`);queue.push(next);
-    }
-  }
-  const finishId=`${finish.i},${finish.k}`;if(!seen.has(finishId))return null;
-  const path=[];let cursor=finishId;
-  while(cursor){const [i,k]=cursor.split(',').map(Number);path.push({i,k});cursor=previous.get(cursor)}
-  return path.reverse();
-}
-function animationFor(record){return animated.find(entry=>entry.mesh===record.mesh)||null}
-function syncRecordAnimation(record){
-  const entry=animationFor(record);if(!entry)return;
-  entry.i=record.i;entry.j=record.j;entry.k=record.k;entry.baseX=record.mesh.position.x;entry.baseY=record.mesh.position.y;entry.baseZ=record.mesh.position.z;entry.state='rest';entry.elapsed=0;
-  if(entry.head)entry.head.rotation.y=0;if(entry.flyer){entry.flyer.position.set(0,0,0);entry.flyer.rotation.set(0,0,0)}
-}
-function updateMoverStatus(){
-  const status=$('#moveStatus');
-  if(!selectedMover){status.classList.remove('show');status.textContent='';moverRing.visible=false;return}
-  const definition=pieces[selectedMover.type];status.textContent=activeMove?`${definition.ico} ${definition.mapu} va en camino…`:`${definition.ico} ${definition.mapu} seleccionado · toca un destino`;status.classList.add('show');moverRing.visible=true;
-}
-function clearMoverSelection(){selectedMover=null;moverRing.visible=false;destinationRing.visible=false;updateMoverStatus();updateMode()}
-function selectMover(record){
-  if(activeMove){toast('Espera a que termine el desplazamiento');return}
-  const entry=animationFor(record);if(entry)resetAnimatedEntry(entry);record.mesh.userData.isMoving=false;syncRecordAnimation(record);
-  selectedMover=record;updateMoverStatus();updateMode();beep(610,.05);
-}
-function movementMessage(record,host){
-  if(host&&(host.type==='fence'||host.type==='fort'))return animalMovers.has(record.type)?`🪵 ${pieces[record.type].mapu} llegó al malal.`:'Llegó al recinto comunitario.';
-  if(host&&host.type==='ruka')return `🏠 ${pieces[record.type].mapu} volvió a la ruka.`;
-  if(record.type==='girl'||record.type==='boy')return '🧭 Puede seguir explorando o volver a la ruka.';
-  return `${pieces[record.type].ico} ${pieces[record.type].mapu} llegó a su destino.`;
-}
-function finishMovement(move){
-  const {record,destination,host,from}=move;world.delete(key(from.i,from.j,from.k));
-  const nextJ=host?firstHostSlot(destination.i,destination.k):1;if(nextJ===null){world.set(key(from.i,from.j,from.k),record);cancelActiveMovement();toast('El lugar ya no está disponible');return}
-  const offset=host?hostOffset(host.type,nextJ):[0,0];record.i=destination.i;record.j=nextJ;record.k=destination.k;record.host=host?host.type:null;
-  record.mesh.position.set(destination.i+offset[0],.5,destination.k+offset[1]);record.collider.position.set(destination.i+offset[0],1,destination.k+offset[1]);record.collider.userData={i:record.i,j:record.j,k:record.k,record};
-  world.set(key(record.i,record.j,record.k),record);record.mesh.userData.isMoving=false;syncRecordAnimation(record);reservedDestinations.delete(key(destination.i,0,destination.k));activeMove=null;destinationRing.visible=false;
-  undoStack.push({op:'move',record,from,to:{i:record.i,j:record.j,k:record.k,host:record.host}});clearIndicatorsForMesh(record.mesh);showRelationFeedback(record.type,record.i,record.k);toast(movementMessage(record,host));updateMoverStatus();evaluate();
-}
-function updateActiveMovement(delta){
-  if(!activeMove)return;const move=activeMove,record=move.record,path=move.path;
-  const from=path[move.segment],to=path[move.segment+1];if(!to){finishMovement(move);return}
-  move.progress=Math.min(1,move.progress+delta*(flyingMovers.has(record.type)?1.5:3.2));const smooth=move.progress*move.progress*(3-2*move.progress),x=from.i+(to.i-from.i)*smooth,z=from.k+(to.k-from.k)*smooth;
-  record.mesh.position.set(x,.5+Math.sin(smooth*Math.PI)*(flyingMovers.has(record.type)?1.05:.12),z);record.mesh.rotation.y=Math.atan2(to.i-from.i,to.k-from.k);record.collider.position.set(x,1,z);
-  if(move.progress>=1){move.segment++;move.progress=0;if(move.segment>=path.length-1)finishMovement(move)}
-}
-function cancelActiveMovement(){
-  if(!activeMove)return;const {record,from,destination}=activeMove;reservedDestinations.delete(key(destination.i,0,destination.k));record.mesh.userData.isMoving=false;record.mesh.position.set(from.x,.5,from.z);record.collider.position.set(from.x,1,from.z);activeMove=null;destinationRing.visible=false;syncRecordAnimation(record);updateMoverStatus();
-}
-function startMovement(record,i,k,host=null){
-  if(activeMove){toast('Espera a que termine el desplazamiento');return false}
-  if(record.i===i&&record.k===k&&!host){clearMoverSelection();return false}
-  if(host&&!hostAccepts(record,host)){toast(animalMovers.has(record.type)?'Los animales pueden entrar al malal.':'Las personas pueden volver a la ruka o al recinto.');return false}
-  if(!host&&!movementCellAvailable(record,i,k,true,null)){toast('Ese destino no está libre o no se puede recorrer');return false}
-  const path=findMovePath(record,i,k,host);if(!path||path.length<2){toast('No hay una ruta libre hasta ese lugar');return false}
-  const oldOffset={x:record.mesh.position.x,z:record.mesh.position.z};record.mesh.userData.isMoving=true;reservedDestinations.add(key(i,0,k));destinationRing.position.set(i,.04,k);destinationRing.visible=true;
-  activeMove={record,path,segment:0,progress:0,destination:{i,k},host,from:{i:record.i,j:record.j,k:record.k,host:record.host,x:oldOffset.x,z:oldOffset.z}};updateMoverStatus();beep(540,.06);return true;
-}
-function restoreMove(record,state){
-  if(!record||!world.has(key(record.i,record.j,record.k)))return false;
-  const occupied=world.get(key(state.i,state.j,state.k));if(occupied&&occupied!==record)return false;
-  world.delete(key(record.i,record.j,record.k));record.i=state.i;record.j=state.j;record.k=state.k;record.host=state.host||null;
-  const offset=record.host?hostOffset(record.host,record.j):[0,0];record.mesh.position.set(record.i+offset[0],.5,record.k+offset[1]);record.collider.position.set(record.i+offset[0],1,record.k+offset[1]);record.collider.userData={i:record.i,j:record.j,k:record.k,record};world.set(key(record.i,record.j,record.k),record);syncRecordAnimation(record);return true;
-}
 function place(i,j,k,type,rotation=0){
   if(i<0||k<0||i>=N||k>=N||j<0||j>=MAXY||world.has(key(i,j,k)))return null;
   const d=pieces[type];let mesh,collider;
@@ -741,11 +629,10 @@ function place(i,j,k,type,rotation=0){
     collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);
     registerAnimation(type,mesh,i,j,k);
   }
-  const record={type,mesh,collider,rotation,i,j,k,host:null};collider.userData={i,j,k,record};mesh.userData.worldRecord=record;world.set(key(i,j,k),record);return true;
+  world.set(key(i,j,k),{type,mesh,collider,rotation});return true;
 }
 function remove(i,j,k){
   const r=world.get(key(i,j,k));if(!r)return null;
-  if(activeMove&&activeMove.record===r)cancelActiveMovement();if(selectedMover===r)clearMoverSelection();
   for(let a=animated.length-1;a>=0;a--)if(animated[a].mesh===r.mesh){resetAnimatedEntry(animated[a]);animated.splice(a,1)}
   clearIndicatorsForMesh(r.mesh);
   scene.remove(r.mesh);removeTarget(r.collider);if(r.collider!==r.mesh)scene.remove(r.collider);
@@ -785,7 +672,7 @@ function renderTabs(){
   const el=$('#tabs');el.innerHTML='';
   categories.forEach(([id,label])=>{
     const b=document.createElement('button');b.className='tab'+(category===id?' active':'');b.textContent=label;
-    b.onclick=()=>{clearMoverSelection();category=id;selected=Object.keys(pieces).find(k=>pieces[k].cat===id);deleting=false;renderTabs();renderItems()};
+    b.onclick=()=>{category=id;selected=Object.keys(pieces).find(k=>pieces[k].cat===id);deleting=false;renderTabs();renderItems()};
     el.appendChild(b);
   });
 }
@@ -798,17 +685,17 @@ function renderItems(){
     b.onclick=()=>{
       pronounce(id);
       if(locked){toast('Completa primero la misión 1');return}
-      clearMoverSelection();selected=id;deleting=false;renderItems();updateMode();
+      selected=id;deleting=false;renderItems();updateMode();
     };
     el.appendChild(b);
   });
   const del=document.createElement('button');del.className='item delete'+(deleting?' selected':'');
   del.innerHTML='<div class="itemIcon">🧹</div><div class="itemName">Borrar</div><div class="itemEs">Sacar pieza</div>';
-  del.onclick=()=>{clearMoverSelection();deleting=true;renderItems();updateMode()};el.appendChild(del);
+  del.onclick=()=>{deleting=true;renderItems();updateMode()};el.appendChild(del);
   updateMode();
 }
 function updateMode(){
-  $('#modeLabel').innerHTML=selectedMover?`Mover <b>${pieces[selectedMover.type].mapu}</b> · toca una casilla de destino`:deleting?'Modo borrar · toca una pieza':pieces[selected].kind==='block'?`Estás cambiando el suelo a <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`:`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`;
+  $('#modeLabel').innerHTML=deleting?'Modo borrar · toca una pieza':pieces[selected].kind==='block'?`Estás cambiando el suelo a <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`:`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`;
 }
 renderTabs();renderItems();
 
@@ -974,25 +861,18 @@ evaluate(true);
 const raycaster=new THREE.Raycaster(),ndc=new THREE.Vector2();
 function ndcFrom(x,y){const r=renderer.domElement.getBoundingClientRect();ndc.x=((x-r.left)/r.width)*2-1;ndc.y=-((y-r.top)/r.height)*2+1}
 function act(x,y){
-  ndcFrom(x,y);raycaster.setFromCamera(ndc,camera);const hits=raycaster.intersectObjects(targets,false);if(!hits.length)return;
-  const movableHit=hits.find(candidate=>candidate.object.userData.record&&movableTypes.has(candidate.object.userData.record.type)),hit=!deleting&&movableHit?movableHit:hits[0];
+  ndcFrom(x,y);raycaster.setFromCamera(ndc,camera);const hit=raycaster.intersectObjects(targets,false)[0];if(!hit)return;
   const c=hit.object.userData;let feedback=null;
   if(deleting){
     if(c.j===0){toast('La base del paisaje no se borra');return}
-    if(c.record&&getHostedMovers(c.i,c.k).length&&!movableTypes.has(c.record.type)){toast('Primero mueve fuera a quienes están en ese lugar');return}
     const removed=remove(c.i,c.j,c.k);if(removed)undoStack.push({op:'add',i:c.i,j:c.j,k:c.k,type:removed.type,rotation:removed.rotation});
-  }else if(c.record&&movableTypes.has(c.record.type)){
-    if(selectedMover===c.record)clearMoverSelection();else selectMover(c.record);return;
-  }else if(selectedMover){
-    const host=c.record&&c.j>0?c.record:null;startMovement(selectedMover,c.i,c.k,host);return;
   }else if(pieces[selected].kind==='block'){
-    if(selected==='water'&&getMoversAtCell(c.i,c.k).length){toast('Primero mueve a quienes están en esa casilla');return}
     const previous=paintGround(c.i,c.k,selected);
     if(previous){undoStack.push({op:'paint',i:c.i,k:c.k,type:previous});beep(470,.05);openInfoOnce(selected);feedback={type:selected,i:c.i,k:c.k}}
   }else{
     const normal=hit.face?hit.face.normal:new THREE.Vector3(0,1,0);
     const i=c.j===0?c.i:c.i+Math.round(normal.x),j=1,k=c.j===0?c.k:c.k+Math.round(normal.z);
-    if(world.has(key(i,j,k))||getMoversAtCell(i,k).length||reservedDestinations.has(key(i,0,k))){toast('Ese espacio ya está ocupado');return}
+    if(world.has(key(i,j,k))){toast('Ese espacio ya está ocupado');return}
     if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected);feedback={type:selected,i,k}}
   }
   evaluate();if(feedback)showRelationFeedback(feedback.type,feedback.i,feedback.k);
@@ -1033,15 +913,9 @@ $('#rotL').onclick=()=>{theta-=.34;updateCamera()};
 $('#rotR').onclick=()=>{theta+=.34;updateCamera()};
 $('#zin').onclick=()=>{radius-=2.3;updateCamera()};
 $('#zout').onclick=()=>{radius+=2.3;updateCamera()};
-$('#undo').onclick=()=>{
-  if(activeMove){toast('Espera a que termine el desplazamiento');return}
-  const a=undoStack.pop();if(!a)return;
-  if(a.op==='remove')remove(a.i,a.j,a.k);else if(a.op==='paint')paintGround(a.i,a.k,a.type);else if(a.op==='move'){if(!restoreMove(a.record,a.from)){undoStack.push(a);toast('No se puede deshacer: la casilla anterior está ocupada');return}}else place(a.i,a.j,a.k,a.type,a.rotation||0);
-  clearMoverSelection();evaluate();
-};
+$('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')remove(a.i,a.j,a.k);else if(a.op==='paint')paintGround(a.i,a.k,a.type);else place(a.i,a.j,a.k,a.type,a.rotation||0);evaluate()};
 $('#reset').onclick=()=>{
   if(!confirm('¿Empezar el paisaje nuevamente?'))return;
-  cancelActiveMovement();clearMoverSelection();
   [...world.keys()].forEach(k=>{const [i,j,l]=k.split(',').map(Number);remove(i,j,l)});
   undoStack.length=0;shownInfo.clear();resetLandscapeFeedback();clearAllIndicators();resetClouds();if('speechSynthesis'in window)speechSynthesis.cancel();mission1Done=mission2Done=false;
   delete $('#m1').dataset.announced;delete $('#m2').dataset.announced;initialWorld();evaluate(true);renderItems();toast('Paisaje reiniciado');
@@ -1055,9 +929,7 @@ let lastFrameTime=performance.now();
 function loop(now){
   requestAnimationFrame(loop);const delta=Math.min(.05,Math.max(0,(now-lastFrameTime)/1000));lastFrameTime=now;
   if(!pageVisible)return;
-  const time=now/1000;updateActiveMovement(delta);animated.forEach(entry=>animateEntry(entry,time,delta));updateClouds(delta);updateIndicators(time);
-  if(selectedMover){moverRing.position.x=selectedMover.mesh.position.x;moverRing.position.z=selectedMover.mesh.position.z;moverRing.scale.setScalar(1+Math.sin(time*4)*.06)}
-  if(destinationRing.visible)destinationRing.scale.setScalar(1+Math.sin(time*5)*.1);renderer.render(scene,camera);
+  const time=now/1000;animated.forEach(entry=>animateEntry(entry,time,delta));updateClouds(delta);updateIndicators(time);renderer.render(scene,camera);
 }
 requestAnimationFrame(loop);
 </script>

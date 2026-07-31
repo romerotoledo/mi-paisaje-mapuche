@@ -24,10 +24,6 @@ Se ejecutó `index.html` desde un servidor HTTP local y se controló la página 
 - Reiniciar después de una escena cargada y volver a Misiones 0/2.
 - Prueba de carga visual con más de 10 árboles, 10 animales, 10 cultivos, 5 fogones, varias piezas de malal y los seis tipos ceremoniales. La escena siguió respondiendo y no registró errores.
 - Los mensajes ecológicos son breves, no modales y usan cooldown.
-- Prototipo de movimiento probado en vista móvil de 390 × 844 px: un chiliweke fue seleccionado tocando su figura, recorrió una ruta y quedó visible dentro del malal.
-- Un niño fue seleccionado, recorrió el tablero evitando el agua y volvió a la entrada de la ruka.
-- Los anillos de selección y destino, el estado “va en camino” y los mensajes de llegada se mostraron correctamente.
-- La consola de la página permaneció sin errores ni advertencias durante los desplazamientos. Los únicos mensajes ajenos observados provenían de una extensión del navegador y no de la página.
 
 ## Validado automáticamente
 
