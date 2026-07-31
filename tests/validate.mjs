@@ -65,7 +65,11 @@ assert.match(html, /type==='fort'/);
 assert.match(html, /function pronounce\(id\)/);
 assert.match(html, /SpeechSynthesisUtterance/);
 assert.match(html, /function startMusic\(\)/);
-assert.match(html, /guía sintetizada aproximada/);
+assert.match(html, /function getNaturalSpanishVoice\(\)/);
+assert.match(html, /new SpeechSynthesisUtterance\(pieces\[id\]\.mapu\)/);
+assert.match(html, /u\.rate=\.88;u\.pitch=1/);
+assert.match(html, /Cada término se lee tal como está escrito/);
+assert.doesNotMatch(html, /const pronunciations=/);
 assert.match(html, /src="\.\/relations\.js"/);
 for (const fn of [
   "getObjectsByType", "getObjectsByCategory", "gridDistance", "isNear",

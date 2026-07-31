@@ -18,7 +18,9 @@ La arquitectura ya reconoce los tipos futuros `swan`, `bandurria` y `frog` para 
 
 ## Audio
 
-La versión actual no contiene grabaciones de voz: conserva la guía de pronunciación aproximada mediante síntesis de voz del dispositivo y la música ambiental generada en el navegador. La disponibilidad y el timbre de la síntesis varían entre Safari, Chrome y cada sistema operativo.
+La versión actual no contiene grabaciones de voz: el juego lee cada término exactamente como aparece escrito y elige la voz española mejor puntuada entre las disponibles en el dispositivo. Prioriza voces chilenas o latinoamericanas y variantes identificadas como naturales, mejoradas o premium, con velocidad y tono cercanos al habla normal. La disponibilidad y el timbre varían entre Safari, Chrome y cada sistema operativo.
+
+Esta mejora evita separar o reemplazar sílabas, pero una voz española no reproduce necesariamente todos los sonidos del mapuzugun. La validación lingüística y una pronunciación auténtica requieren grabaciones de hablantes.
 
 Cuando existan grabaciones validadas por hablantes, se podrán añadir sin bloquear el juego. Los nombres previstos para los términos nuevos son `assets/audio/foye.mp3` y `assets/audio/lonko.mp3`; estos archivos todavía no se cargan ni son obligatorios.
 

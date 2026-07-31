@@ -42,4 +42,5 @@ Se ejecutó `index.html` desde un servidor HTTP local y se controló la página 
 - Confirmar sesiones largas y presión de memoria en un iPhone de gama baja; una prueba Chromium de escritorio no puede certificar que Safari móvil nunca cierre la pestaña.
 - Comprobar Android y tablets físicas.
 - Simular red lenta y confirmar el comportamiento de la caché del CDN después de la primera carga.
-- Validar pronunciaciones con hablantes de mapuzugun. No hay grabaciones para Foye o Lonko; actualmente se usa síntesis de voz aproximada y la ausencia de archivos de audio no produce errores.
+- Escuchar la voz elegida en Safari, Chrome, iPhone, iPad y Android: el juego lee ahora el texto visible sin separación silábica y prioriza la voz española más natural disponible, pero el resultado depende de las voces instaladas.
+- Validar pronunciaciones con hablantes de mapuzugun. No hay grabaciones para Foye o Lonko; una voz española no garantiza los sonidos auténticos y la ausencia de archivos de audio no produce errores.
