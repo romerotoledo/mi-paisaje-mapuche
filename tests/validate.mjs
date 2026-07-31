@@ -38,4 +38,8 @@ for (const eventName of ["touchstart", "touchmove", "touchend", "touchcancel"]) 
   assert.match(html, new RegExp(`addEventListener\\(['"]${eventName}['"]`));
 }
 
+assert.match(html, /function paintGround\(i,k,type\)/);
+assert.match(html, /pieces\[selected\]\.kind==='block'/);
+assert.match(html, /op:'paint'/);
+
 console.log("OK: HTML estático, HTTPS, recursos, controles táctiles y sintaxis JavaScript validados.");
