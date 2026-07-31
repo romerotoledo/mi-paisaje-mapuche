@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1">
+<meta name="theme-color" content="#3d2b1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi paisaje mapuche">
+<title>Mi paisaje mapuche</title>
+<style>
+:root{
+  --earth:#5b3e2b; --earth2:#2f2118; --cream:#fff7e7; --ochre:#d89a35;
+  --green:#4f8b45; --green2:#315f35; --blue:#4a9ac2; --red:#a94332;
+  --panel:rgba(255,250,239,.96); --shadow:0 8px 24px rgba(28,20,14,.24);
+  --safe-top:env(safe-area-inset-top,0px); --safe-right:env(safe-area-inset-right,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px); --safe-left:env(safe-area-inset-left,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#a8c9df;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--earth2);overscroll-behavior:none}
+body{-webkit-touch-callout:none}
+button{font:inherit;color:inherit;-webkit-appearance:none;appearance:none}
+#app{position:fixed;inset:0;touch-action:none;background:linear-gradient(#80b7da 0 45%,#c8d7a2 76%,#c2a86c 100%)}
+canvas{position:absolute;inset:0;display:block;touch-action:none}
+.topPattern{position:absolute;z-index:30;top:0;left:0;right:0;height:8px;background:repeating-linear-gradient(90deg,#a94332 0 16px,#f5dfaa 16px 23px,#2b251f 23px 31px,#d89a35 31px 46px,#4a9ac2 46px 54px,#f5dfaa 54px 61px)}
+header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + var(--safe-top)) calc(14px + var(--safe-right)) 34px calc(14px + var(--safe-left));background:linear-gradient(rgba(35,27,20,.38),transparent);pointer-events:none}
+.title{color:#fff;font-size:clamp(20px,5vw,31px);font-weight:900;line-height:1;text-shadow:0 2px 3px rgba(0,0,0,.38)}
+.subtitle{color:#fff0cd;font-size:clamp(10px,2.4vw,14px);font-weight:800;margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+#missionBtn{position:absolute;z-index:15;left:calc(10px + var(--safe-left));top:calc(65px + var(--safe-top));min-height:46px;padding:8px 13px;border:2px solid var(--earth);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);font-weight:900}
+#missionBtn strong{color:var(--red)}
+#missionPanel{display:none;position:absolute;z-index:25;left:calc(10px + var(--safe-left));top:calc(117px + var(--safe-top));width:min(370px,88vw);max-height:58vh;overflow:auto;touch-action:pan-y;background:var(--panel);border:2px solid var(--earth);border-radius:20px;padding:12px;box-shadow:var(--shadow)}
+#missionPanel h2{font-size:18px;margin:0 0 8px}
+.missionCard{padding:10px 6px;border-top:1px dashed rgba(91,62,43,.35)}
+.missionCard:first-of-type{border-top:none}
+.missionHead{display:flex;gap:9px;align-items:center;font-weight:900}
+.badge{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--ochre);color:#fff;flex:none}
+.missionCard.done{opacity:.62}.missionCard.done .badge{background:var(--green)}
+.missionCard p{margin:6px 0 0 37px;font-size:13px;line-height:1.35}
+#helpChip{position:absolute;z-index:12;left:50%;top:calc(69px + var(--safe-top));transform:translateX(-50%);max-width:58vw;border:2px solid var(--earth);border-radius:999px;background:var(--panel);box-shadow:var(--shadow);padding:7px 12px;font-size:11px;font-weight:900;text-align:center;transition:opacity .4s}
+#controls{position:absolute;z-index:14;right:calc(10px + var(--safe-right));top:calc(65px + var(--safe-top));display:flex;flex-direction:column;gap:7px}
+.ctrl{width:47px;height:47px;border:2px solid rgba(91,62,43,.25);border-radius:15px;background:var(--panel);box-shadow:0 5px 14px rgba(28,20,14,.22);font-size:21px;font-weight:900;touch-action:manipulation}
+.ctrl:active{transform:scale(.92)}
+#toast{position:absolute;z-index:50;left:50%;bottom:calc(188px + var(--safe-bottom));transform:translateX(-50%);max-width:88vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#241a13;color:#fff;padding:10px 17px;border-radius:999px;font-weight:900;opacity:0;pointer-events:none;transition:.25s}
+#toast.show{opacity:.96;bottom:calc(201px + var(--safe-bottom))}
+#infoCard{display:none;position:absolute;z-index:40;left:50%;top:50%;transform:translate(-50%,-50%);width:min(420px,90vw);background:#fffaf0;border:3px solid var(--earth);border-radius:22px;box-shadow:0 18px 48px rgba(28,20,14,.36);padding:16px}
+#infoCard .close{position:absolute;right:10px;top:10px;width:42px;height:42px;border:none;border-radius:50%;background:#efe2c7;font-size:20px;font-weight:900}
+#infoIcon{font-size:46px}.infoTitle{font-size:23px;font-weight:900;margin-top:4px}.infoMapu{color:var(--red)}
+#infoText{font-size:14px;line-height:1.45;margin-top:8px}
+#freeMode{display:none;margin-top:10px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:10px 14px;font-weight:900}
+footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8px + var(--safe-right)) calc(9px + var(--safe-bottom)) calc(8px + var(--safe-left));background:linear-gradient(transparent,rgba(55,37,25,.96) 23%)}
+#tabs,#items{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain}
+#tabs::-webkit-scrollbar,#items::-webkit-scrollbar{display:none}
+#tabs{padding:0 7px 6px}
+.tab{flex:0 0 auto;min-height:39px;border:none;border-radius:999px;background:rgba(255,247,231,.9);padding:7px 12px;font-size:11px;font-weight:900}
+.tab.active{background:var(--ochre);color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.58)}
+#modeLabel{height:19px;text-align:center;color:#fff;font-weight:900;font-size:13px;text-shadow:0 1px 2px #000}
+#items{padding:4px 8px 7px}
+.item{flex:0 0 75px;min-height:82px;border:2px solid rgba(91,62,43,.18);border-radius:15px;background:var(--cream);box-shadow:0 4px 10px rgba(28,20,14,.24);padding:5px;text-align:center;touch-action:manipulation}
+.item.selected{border-color:var(--red);box-shadow:0 0 0 3px rgba(169,67,50,.28),0 4px 10px rgba(28,20,14,.24);transform:translateY(-2px)}
+.item.locked{opacity:.42;filter:grayscale(.35)}
+.itemIcon{height:35px;border-radius:10px;background:linear-gradient(#e7f0dc,#d4e2c5);display:grid;place-items:center;font-size:23px}
+.itemName{font-size:12px;line-height:1.05;font-weight:900;margin-top:4px}
+.itemEs{font-size:9.5px;line-height:1.05;color:#866447;font-weight:800}
+.item.delete{background:#f9ded7}
+.confetti{position:absolute;z-index:70;top:-14px;width:10px;height:10px;pointer-events:none;animation:fall linear forwards}
+.institutionalCredit{
+  position:absolute;z-index:11;top:calc(14px + var(--safe-top));right:calc(12px + var(--safe-right));
+  width:min(410px,46vw);min-height:48px;display:grid;grid-template-columns:82px minmax(130px,1fr) 94px;
+  align-items:center;gap:10px;padding:6px 10px;border:1px solid rgba(91,62,43,.3);border-radius:14px;
+  background:rgba(255,250,239,.93);box-shadow:0 5px 16px rgba(28,20,14,.18);pointer-events:none
+}
+.institutionalLogo{display:block;max-width:100%;max-height:34px;object-fit:contain}
+.institutionalLogoUa{max-height:29px}
+.institutionalCopy{text-align:center;line-height:1.12;color:var(--earth2)}
+.institutionalCopy strong{display:block;font-size:11px}
+.institutionalCopy small{display:block;margin-top:2px;font-size:8px;font-weight:800}
+@keyframes fall{to{transform:translateY(108vh) rotate(700deg)}}
+@media(min-width:768px){
+  #missionBtn{left:calc(18px + var(--safe-left));top:calc(78px + var(--safe-top));font-size:15px}
+  #missionPanel{left:calc(18px + var(--safe-left));top:calc(134px + var(--safe-top));width:390px}
+  #controls{right:calc(18px + var(--safe-right));top:calc(78px + var(--safe-top))}
+  .ctrl{width:54px;height:54px;font-size:25px}
+  #helpChip{top:calc(81px + var(--safe-top));font-size:13px}
+  .tab{min-height:44px;font-size:13px}
+  .item{flex-basis:90px;min-height:93px}
+  .itemIcon{height:43px;font-size:28px}.itemName{font-size:14px}.itemEs{font-size:11px}
+}
+@media(max-width:430px){
+  header{padding-right:166px}
+  .title{font-size:18px}.subtitle{font-size:9px}
+  .institutionalCredit{top:calc(12px + var(--safe-top));right:calc(7px + var(--safe-right));width:154px;min-height:44px;grid-template-columns:37px 1fr 43px;gap:4px;padding:4px 5px;border-radius:11px}
+  .institutionalLogo{max-height:24px}.institutionalLogoUa{max-height:20px}
+  .institutionalCopy strong{font-size:7px}.institutionalCopy small{font-size:5.8px}
+  #helpChip{max-width:52vw;font-size:10px}
+  .ctrl{width:43px;height:43px}
+  .item{flex-basis:66px;min-height:75px}.itemIcon{height:30px;font-size:20px}
+}
+@media(max-height:520px) and (orientation:landscape){
+  .institutionalCredit{top:calc(10px + var(--safe-top));width:255px;min-height:38px;grid-template-columns:54px 1fr 61px;gap:6px;padding:3px 7px}
+  .institutionalLogo{max-height:24px}.institutionalLogoUa{max-height:20px}
+  .institutionalCopy strong{font-size:8px}.institutionalCopy small{font-size:6.5px}
+  .subtitle{display:none}
+  #missionBtn{top:calc(48px + var(--safe-top))}
+  #controls{top:calc(46px + var(--safe-top));flex-direction:row}
+  .ctrl{width:41px;height:41px}
+  #helpChip{display:none}
+  #missionPanel{top:calc(96px + var(--safe-top));max-height:48vh}
+  footer{padding-top:8px}.tab{min-height:31px;padding:4px 9px}.item{min-height:63px;flex-basis:64px}
+  .itemIcon{height:27px;font-size:19px}#modeLabel{height:15px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="topPattern"></div>
+<header>
+  <div class="title">Mi paisaje mapuche 🌋</div>
+  <div class="subtitle">Conoce la naturaleza y la vida del lof</div>
+</header>
+<aside class="institutionalCredit" aria-label="Instituciones y financiamiento">
+  <img class="institutionalLogo" src="./assets/institucional/anid.svg" alt="ANID, Agencia Nacional de Investigación y Desarrollo">
+  <div class="institutionalCopy">
+    <strong>Proyecto FONDECYT 1231127</strong>
+    <small>Dirigido por el Dr. Hugo Romero-Toledo</small>
+  </div>
+  <img class="institutionalLogo institutionalLogoUa" src="./assets/institucional/universidad-autonoma.png" alt="Universidad Autónoma de Chile">
+</aside>
+
+<button id="missionBtn">🎯 Misiones <strong>0/2</strong></button>
+<section id="missionPanel">
+  <h2>Aprendamos paso a paso</h2>
+  <div class="missionCard" id="m1">
+    <div class="missionHead"><span class="badge">1</span> Conociendo el paisaje</div>
+    <p>Agrega agua, un volcán, un bosque, un humedal, un cerro y tres animales silvestres diferentes.</p>
+  </div>
+  <div class="missionCard" id="m2">
+    <div class="missionHead"><span class="badge">2</span> El paisaje del lof</div>
+    <p>Agrega una ruka, tres personas, una chacra, animales domésticos y un espacio ceremonial.</p>
+  </div>
+  <button id="freeMode">Entrar al modo paisaje libre</button>
+</section>
+
+<div id="helpChip">👆 Toca · ✋ Arrastra · 🤏 Pellizca</div>
+
+<div id="controls">
+  <button class="ctrl" id="rotL" aria-label="Girar izquierda">⟲</button>
+  <button class="ctrl" id="rotR" aria-label="Girar derecha">⟳</button>
+  <button class="ctrl" id="zin" aria-label="Acercar">＋</button>
+  <button class="ctrl" id="zout" aria-label="Alejar">－</button>
+  <button class="ctrl" id="undo" aria-label="Deshacer">↶</button>
+  <button class="ctrl" id="info" aria-label="Información">ⓘ</button>
+  <button class="ctrl" id="sound" aria-label="Sonido">🔊</button>
+  <button class="ctrl" id="reset" aria-label="Reiniciar">🧹</button>
+</div>
+
+<div id="toast"></div>
+
+<section id="infoCard">
+  <button class="close">×</button>
+  <div id="infoIcon"></div>
+  <div class="infoTitle"><span id="infoMapu" class="infoMapu"></span> · <span id="infoEs"></span></div>
+  <div id="infoText"></div>
+</section>
+
+<footer>
+  <nav id="tabs"></nav>
+  <div id="modeLabel"></div>
+  <div id="items"></div>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), N=12, MAXY=8;
+const categories=[
+  ['ambiental','🌿 Ambientales'],['silvestre','🦊 Silvestres'],['productivo','🌽 Productivos'],
+  ['domestico','🏠 Domésticos'],['ceremonial','🥁 Ceremoniales'],['social','👨‍👩‍👧 Sociales']
+];
+const pieces={
+  grass:{cat:'ambiental',kind:'block',ico:'🌿',mapu:'Kachu',es:'Pasto',desc:'El pasto forma espacios abiertos donde viven y se desplazan animales y personas.',col:0x74a34f},
+  earth:{cat:'ambiental',kind:'block',ico:'🟫',mapu:'Mapu',es:'Tierra',desc:'La tierra sostiene la vida, los cultivos, las viviendas y los caminos.',col:0x84582f},
+  water:{cat:'ambiental',kind:'block',ico:'💧',mapu:'Ko',es:'Agua',desc:'El agua forma lagos, ríos y humedales. Es necesaria para las personas, animales y plantas.',col:0x389bc2,water:true},
+  wetland:{cat:'ambiental',kind:'obj',ico:'🪷',mapu:'Menoko',es:'Humedal',desc:'Es un ambiente donde el agua, las plantas y los animales forman un espacio especial.'},
+  forest:{cat:'ambiental',kind:'obj',ico:'🌳',mapu:'Mawiza',es:'Bosque',desc:'El bosque entrega refugio, alimentos, madera y plantas. También alberga numerosos animales.'},
+  hill:{cat:'ambiental',kind:'obj',ico:'⛰️',mapu:'Wingkul',es:'Cerro',desc:'Los cerros ayudan a orientarse y forman parte importante del paisaje.'},
+  volcano:{cat:'ambiental',kind:'obj',ico:'🌋',mapu:'Zegüñ',es:'Volcán',desc:'Los volcanes marcan el paisaje del sur de Chile y recuerdan que la tierra cambia.'},
+
+  puma:{cat:'silvestre',kind:'obj',ico:'🐆',mapu:'Pangui',es:'Puma',desc:'El puma recorre grandes territorios y necesita espacios naturales extensos.'},
+  fox:{cat:'silvestre',kind:'obj',ico:'🦊',mapu:'Ngürü',es:'Zorro',desc:'El zorro vive en distintos ambientes y se alimenta de pequeños animales y frutos.'},
+  condor:{cat:'silvestre',kind:'obj',ico:'🦅',mapu:'Mañke',es:'Cóndor',desc:'El cóndor vuela sobre cerros y montañas y puede recorrer grandes distancias.'},
+  pudu:{cat:'silvestre',kind:'obj',ico:'🦌',mapu:'Püdu',es:'Pudú',desc:'El pudú es un pequeño ciervo que vive principalmente en ambientes boscosos.'},
+  hawk:{cat:'silvestre',kind:'obj',ico:'🦅',mapu:'Ñamku',es:'Halcón',desc:'El halcón observa el paisaje desde el aire y caza pequeños animales.'},
+
+  corn:{cat:'productivo',kind:'obj',ico:'🌽',mapu:'Wa',es:'Maíz',desc:'El maíz puede cultivarse en una chacra y forma parte de diferentes preparaciones.'},
+  potato:{cat:'productivo',kind:'obj',ico:'🥔',mapu:'Poñü',es:'Papa',desc:'La papa crece bajo la tierra y ha sido un alimento importante en el sur.'},
+  fishing:{cat:'productivo',kind:'obj',ico:'🎣',mapu:'Challwatun',es:'Pesca',desc:'La pesca se realiza junto a ríos, lagos o el mar. Necesita agua cercana.'},
+
+  ruka:{cat:'domestico',kind:'obj',ico:'🏠',mapu:'Ruka',es:'Casa',desc:'La ruka es un espacio de vida familiar y comunitaria. Allí se cocina, conversa y trabaja.'},
+  hearth:{cat:'domestico',kind:'obj',ico:'🔥',mapu:'Kütral',es:'Fogón',desc:'El fogón entrega calor y permite cocinar. También reúne a las personas.'},
+  metawe:{cat:'domestico',kind:'obj',ico:'🏺',mapu:'Metawe',es:'Jarro',desc:'El metawe es una vasija usada para guardar o servir líquidos.'},
+  fence:{cat:'domestico',kind:'obj',ico:'🚧',mapu:'Malal',es:'Cerco',desc:'El malal permite delimitar y proteger espacios domésticos o productivos.'},
+  chicken:{cat:'domestico',kind:'obj',ico:'🐔',mapu:'Achawall',es:'Gallina',desc:'La gallina forma parte de la vida doméstica en épocas históricas.'},
+  camelid:{cat:'domestico',kind:'obj',ico:'🦙',mapu:'Chiliweke',es:'Camélido',desc:'El chiliweke fue un animal doméstico importante antes de la llegada europea.'},
+
+  rewe:{cat:'ceremonial',kind:'obj',ico:'🪵',mapu:'Rewe',es:'Espacio ceremonial',desc:'El rewe forma parte de espacios ceremoniales y posee una importancia especial.'},
+  kultrun:{cat:'ceremonial',kind:'obj',ico:'🥁',mapu:'Kultrung',es:'Tambor',desc:'El kultrung es un instrumento ceremonial asociado especialmente a la machi.'},
+  kuel:{cat:'ceremonial',kind:'obj',ico:'⛰️',mapu:'Kuel',es:'Montículo',desc:'El kuel es un montículo de tierra vinculado con memoria, territorio y ceremonias.'},
+
+  woman:{cat:'social',kind:'obj',ico:'👩',mapu:'Domo',es:'Mujer',desc:'Las personas participan en la vida familiar, productiva, social y ceremonial.'},
+  man:{cat:'social',kind:'obj',ico:'👨',mapu:'Wentru',es:'Hombre',desc:'Las personas participan en la vida familiar, productiva, social y ceremonial.'},
+  child:{cat:'social',kind:'obj',ico:'🧒',mapu:'Pichi che',es:'Niña o niño',desc:'Las niñas y los niños aprenden observando, jugando y participando en la vida comunitaria.'},
+  elder:{cat:'social',kind:'obj',ico:'🧓',mapu:'Fücha che',es:'Persona mayor',desc:'Las personas mayores conservan recuerdos, experiencias y conocimientos importantes.'},
+  machi:{cat:'social',kind:'obj',ico:'🥁',mapu:'Machi',es:'Autoridad espiritual',desc:'La machi cumple un papel espiritual y medicinal dentro de la comunidad.'}
+};
+
+let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=false;
+const app=$('#app'), scene=new THREE.Scene();
+scene.fog=new THREE.Fog(0xdbe7d7,25,62);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,1000);
+const renderer=new THREE.WebGLRenderer({antialias:false,alpha:true,powerPreference:'default'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=false;
+renderer.domElement.style.touchAction='none';
+app.insertBefore(renderer.domElement,app.firstChild);
+
+scene.add(new THREE.HemisphereLight(0xd7ecf7,0x6e5c3f,1.05));
+const sun=new THREE.DirectionalLight(0xfff2d4,.75);sun.position.set(14,20,8);scene.add(sun);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshLambertMaterial({color:0x8faf61}));
+ground.rotation.x=-Math.PI/2;ground.position.y=-.51;scene.add(ground);
+
+const boxGeo=new THREE.BoxGeometry(1,1,1), world=new Map(), targets=[], undoStack=[], animated=[];
+const key=(i,j,k)=>`${i},${j},${k}`;
+function mat(c,transparent=false){return new THREE.MeshLambertMaterial({color:c,transparent,opacity:transparent?.74:1})}
+const mats={grass:mat(0x72a34e),earth:mat(0x84582f),water:mat(0x389bc2,true)};
+function part(geo,color,x=0,y=0,z=0,rx=0,ry=0,rz=0){
+  const m=new THREE.Mesh(geo,mat(color));m.position.set(x,y,z);m.rotation.set(rx,ry,rz);return m;
+}
+function human(color,scale=1){
+  const g=new THREE.Group();g.scale.setScalar(scale);
+  g.add(part(new THREE.BoxGeometry(.3,.42,.22),color,0,.56,0));
+  g.add(part(new THREE.BoxGeometry(.1,.32,.12),0x352419,-.09,.18,0));
+  g.add(part(new THREE.BoxGeometry(.1,.32,.12),0x352419,.09,.18,0));
+  g.add(part(new THREE.BoxGeometry(.22,.22,.2),0xb27b50,0,.91,0));
+  return g;
+}
+function animal(color,scale=.82){
+  const g=new THREE.Group();g.scale.setScalar(scale);
+  g.add(part(new THREE.BoxGeometry(.58,.29,.25),color,0,.45,0));
+  g.add(part(new THREE.BoxGeometry(.22,.2,.2),color,.34,.58,0));
+  [[-.2,.08],[-.2,-.08],[.18,.08],[.18,-.08]].forEach(p=>g.add(part(new THREE.CylinderGeometry(.03,.03,.34,5),color,p[0],.2,p[1])));
+  return g;
+}
+function build(type){
+  const g=new THREE.Group();
+  if(type==='wetland'){
+    g.add(part(new THREE.BoxGeometry(.95,.08,.95),0x4c8870,0,.04,0));
+    for(let a=0;a<7;a++){const x=-.36+(a%4)*.24,z=-.3+Math.floor(a/4)*.42;g.add(part(new THREE.CylinderGeometry(.018,.026,.48,5),0x4c7b37,x,.25,z))}
+    g.add(part(new THREE.SphereGeometry(.08,7,6),0xe4a7c4,.18,.16,.1));
+  } else if(type==='forest'){
+    [[-.28,0],[.24,.1],[0,-.24]].forEach((p,i)=>{
+      g.add(part(new THREE.CylinderGeometry(.07,.1,.68,6),0x6a4323,p[0],.34,p[1]));
+      g.add(part(new THREE.IcosahedronGeometry(.32,0),i%2?0x4f8e3d:0x3e7835,p[0],.84,p[1]));
+    });
+  } else if(type==='hill'){g.add(part(new THREE.ConeGeometry(.74,.88,12),0x65834c,0,.44,0))}
+  else if(type==='volcano'){
+    g.add(part(new THREE.ConeGeometry(.8,1.16,14),0x5a5449,0,.58,0));
+    g.add(part(new THREE.ConeGeometry(.3,.34,14),0xf2f4f5,0,1.01,0));
+  } else if(['puma','fox','pudu'].includes(type)){
+    const c={puma:0xc39151,fox:0xb96b35,pudu:0x775136}[type];g.add(animal(c,type==='pudu'?.7:.84));
+  } else if(['condor','hawk'].includes(type)){
+    const c=type==='condor'?0x24211d:0x7b5a39;
+    g.add(part(new THREE.SphereGeometry(.15,8,7),c,0,.54,0));
+    g.add(part(new THREE.BoxGeometry(.64,.06,.22),c,0,.58,0));
+    g.add(part(new THREE.SphereGeometry(.09,7,6),type==='condor'?0xf1eee8:0x9c7651,.18,.66,0));
+  } else if(type==='corn'||type==='potato'){
+    g.add(part(new THREE.BoxGeometry(.93,.11,.93),0x5b3d24,0,.055,0));
+    [[-.25,-.22],[.22,-.18],[-.04,.22],[.26,.24]].forEach((p,i)=>{
+      if(type==='potato')g.add(part(new THREE.IcosahedronGeometry(.15,0),0x4f8a3a,p[0],.23,p[1]));
+      else{g.add(part(new THREE.CylinderGeometry(.025,.035,.56,5),0x5c993a,p[0],.39,p[1]));g.add(part(new THREE.SphereGeometry(.08,6,6),0xf0c438,p[0],.69,p[1]))}
+    });
+  } else if(type==='fishing'){
+    g.add(part(new THREE.CylinderGeometry(.018,.018,.9,5),0x6b4828,0,.45,0,0,0,-.45));
+    g.add(part(new THREE.TorusGeometry(.22,.015,5,12,Math.PI),0xddd6c7,.22,.28,0,0,0,.2));
+  } else if(type==='ruka'){
+    g.add(part(new THREE.BoxGeometry(.95,.58,.74),0x79512f,0,.29,0));
+    g.add(part(new THREE.ConeGeometry(.82,.55,4),0xcaa14b,0,.88,0,0,Math.PI/4,0));
+    g.add(part(new THREE.BoxGeometry(.23,.34,.04),0x2b1c10,0,.17,.38));
+  } else if(type==='hearth'){
+    g.add(part(new THREE.CylinderGeometry(.31,.34,.12,12),0x5f4b3d,0,.06,0));
+    g.add(part(new THREE.ConeGeometry(.14,.52,8),0xf08b22,0,.37,0));
+  } else if(type==='metawe'){
+    g.add(part(new THREE.SphereGeometry(.2,10,8),0xb96e45,0,.22,0));
+    g.add(part(new THREE.CylinderGeometry(.08,.11,.16,9),0xb96e45,0,.43,0));
+  } else if(type==='fence'){
+    for(let i=-2;i<=2;i++)g.add(part(new THREE.CylinderGeometry(.04,.045,.62,5),0x694728,i*.18,.31,0));
+    g.add(part(new THREE.BoxGeometry(.85,.05,.05),0x5b3d22,0,.46,0));
+  } else if(type==='chicken'){
+    g.add(part(new THREE.SphereGeometry(.18,8,7),0xb46e3f,0,.3,0));
+    g.add(part(new THREE.SphereGeometry(.1,8,7),0xb46e3f,.18,.45,0));
+  } else if(type==='camelid'){g.add(animal(0xd7c29a,.9));g.add(part(new THREE.CylinderGeometry(.06,.08,.44,6),0xd7c29a,.25,.77,0,0,0,-.25))}
+  else if(type==='rewe'){
+    g.add(part(new THREE.BoxGeometry(.18,1.38,.18),0x6b492b,0,.69,0));
+    for(let i=0;i<4;i++)g.add(part(new THREE.BoxGeometry(.32,.07,.15),0x815a34,0,.34+i*.29,.14));
+  } else if(type==='kultrun'){g.add(part(new THREE.CylinderGeometry(.25,.26,.12,16),0xa9702f,0,.18,0,Math.PI/2,0,0))}
+  else if(type==='kuel'){
+    g.add(part(new THREE.CylinderGeometry(.8,.9,.16,16),0x7a5a34,0,.08,0));
+    g.add(part(new THREE.CylinderGeometry(.5,.8,.58,16),0x5f8a3c,0,.42,0));
+  } else if(type==='woman')g.add(human(0x3b2f44));
+  else if(type==='man')g.add(human(0x876e4b));
+  else if(type==='child')g.add(human(0x4d88b6,.72));
+  else if(type==='elder')g.add(human(0x6d596e,.9));
+  else if(type==='machi'){g.add(human(0x315fa8));g.add(part(new THREE.CylinderGeometry(.12,.13,.07,12),0xa9702f,0,.48,.22,Math.PI/2,0,0))}
+  return g;
+}
+function addTarget(m){targets.push(m)}
+function removeTarget(m){const i=targets.indexOf(m);if(i>=0)targets.splice(i,1)}
+function place(i,j,k,type){
+  if(i<0||k<0||i>=N||k>=N||j<0||j>=MAXY||world.has(key(i,j,k)))return null;
+  const d=pieces[type];let mesh,collider;
+  if(d.kind==='block'){
+    mesh=new THREE.Mesh(boxGeo,mats[type]);mesh.position.set(i,j,k);mesh.userData={i,j,k};scene.add(mesh);collider=mesh;addTarget(mesh);
+  }else{
+    mesh=build(type);mesh.position.set(i,j-.5,k);scene.add(mesh);
+    collider=new THREE.Mesh(boxGeo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
+    collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);
+    animated.push({mesh,baseY:mesh.position.y,phase:Math.random()*6.28,type});
+  }
+  world.set(key(i,j,k),{type,mesh,collider});return true;
+}
+function remove(i,j,k){
+  const r=world.get(key(i,j,k));if(!r)return null;
+  for(let a=animated.length-1;a>=0;a--)if(animated[a].mesh===r.mesh)animated.splice(a,1);
+  scene.remove(r.mesh);removeTarget(r.collider);if(r.collider!==r.mesh)scene.remove(r.collider);
+  world.delete(key(i,j,k));return r.type;
+}
+function initialWorld(){
+  for(let i=0;i<N;i++)for(let k=0;k<N;k++)place(i,0,k,'grass');
+  [[9,2],[10,2],[9,3],[10,3],[10,4]].forEach(([i,k])=>{remove(i,0,k);place(i,0,k,'water')});
+  place(2,1,2,'forest');place(3,1,3,'forest');
+}
+initialWorld();
+
+const target=new THREE.Vector3((N-1)/2,.55,(N-1)/2);let radius=20.5,theta=-.72,phi=.98;
+function updateCamera(){
+  phi=Math.max(.28,Math.min(1.4,phi));radius=Math.max(9,Math.min(37,radius));
+  camera.position.set(target.x+radius*Math.sin(phi)*Math.cos(theta),target.y+radius*Math.cos(phi),target.z+radius*Math.sin(phi)*Math.sin(theta));
+  camera.lookAt(target);
+}
+updateCamera();
+
+function renderTabs(){
+  const el=$('#tabs');el.innerHTML='';
+  categories.forEach(([id,label])=>{
+    const b=document.createElement('button');b.className='tab'+(category===id?' active':'');b.textContent=label;
+    b.onclick=()=>{category=id;selected=Object.keys(pieces).find(k=>pieces[k].cat===id);deleting=false;renderTabs();renderItems()};
+    el.appendChild(b);
+  });
+}
+function renderItems(){
+  const el=$('#items');el.innerHTML='';
+  Object.entries(pieces).filter(([,d])=>d.cat===category).forEach(([id,d])=>{
+    const locked=!freeMode && category!=='ambiental' && category!=='silvestre' && !mission1Done;
+    const b=document.createElement('button');b.className='item'+(!deleting&&selected===id?' selected':'')+(locked?' locked':'');
+    b.innerHTML=`<div class="itemIcon">${d.ico}</div><div class="itemName">${d.mapu}</div><div class="itemEs">${d.es}</div>`;
+    b.onclick=()=>{
+      if(locked){toast('Completa primero la misión 1');return}
+      selected=id;deleting=false;renderItems();updateMode();
+    };
+    el.appendChild(b);
+  });
+  const del=document.createElement('button');del.className='item delete'+(deleting?' selected':'');
+  del.innerHTML='<div class="itemIcon">🧹</div><div class="itemName">Borrar</div><div class="itemEs">Sacar pieza</div>';
+  del.onclick=()=>{deleting=true;renderItems();updateMode()};el.appendChild(del);
+  updateMode();
+}
+function updateMode(){
+  $('#modeLabel').innerHTML=deleting?'Modo borrar · toca una pieza':`Estás poniendo <b>${pieces[selected].mapu}</b> · ${pieces[selected].es}`;
+}
+renderTabs();renderItems();
+
+let mission1Done=false,mission2Done=false,missionPanel=false,toastTimer;
+$('#missionBtn').onclick=()=>{missionPanel=!missionPanel;$('#missionPanel').style.display=missionPanel?'block':'none'};
+$('.close').onclick=()=>$('#infoCard').style.display='none';
+$('#info').onclick=()=>openInfo(selected);
+$('#freeMode').onclick=()=>{freeMode=true;$('#missionPanel').style.display='none';missionPanel=false;toast('Modo paisaje libre activado');renderItems()};
+function openInfo(id){
+  const d=pieces[id];$('#infoIcon').textContent=d.ico;$('#infoMapu').textContent=d.mapu;$('#infoEs').textContent=d.es;$('#infoText').textContent=d.desc;$('#infoCard').style.display='block';
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2100)}
+function beep(freq=520,d=.08){
+  if(!soundOn)return;
+  try{const ctx=new (window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=freq;g.gain.value=.035;o.connect(g);g.connect(ctx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);o.stop(ctx.currentTime+d)}catch{}
+}
+$('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'🔊':'🔇';toast(soundOn?'Sonido activado':'Sonido desactivado')};
+
+function countTypes(){const c={};world.forEach(r=>c[r.type]=(c[r.type]||0)+1);return c}
+function evaluate(silent=false){
+  const c=countTypes();
+  const fauna=['puma','fox','condor','pudu','hawk'].filter(x=>(c[x]||0)>0).length;
+  mission1Done=(c.water||0)>0&&(c.volcano||0)>0&&(c.forest||0)>0&&(c.wetland||0)>0&&(c.hill||0)>0&&fauna>=3;
+  const persons=(c.woman||0)+(c.man||0)+(c.child||0)+(c.elder||0)+(c.machi||0);
+  const crops=(c.corn||0)+(c.potato||0)+(c.fishing||0);
+  const domestic=(c.chicken||0)+(c.camelid||0);
+  const ceremonial=(c.rewe||0)+(c.kultrun||0)+(c.kuel||0);
+  mission2Done=(c.ruka||0)>0&&persons>=3&&crops>0&&domestic>0&&ceremonial>0;
+  const n=(mission1Done?1:0)+(mission2Done?1:0);
+  $('#m1').classList.toggle('done',mission1Done);$('#m1 .badge').textContent=mission1Done?'✓':'1';
+  $('#m2').classList.toggle('done',mission2Done);$('#m2 .badge').textContent=mission2Done?'✓':'2';
+  $('#missionBtn').innerHTML=`🎯 Misiones <strong>${n}/2</strong>`;
+  $('#freeMode').style.display=n===2?'block':'none';
+  if(!silent){
+    if(mission1Done&&!$('#m1').dataset.announced){$('#m1').dataset.announced='1';toast('¡Küme! Completaste la misión 1');beep(660,.12);confetti(24);renderItems()}
+    if(mission2Done&&!$('#m2').dataset.announced){$('#m2').dataset.announced='1';toast('🌈 ¡Completaste el paisaje del lof!');beep(820,.16);confetti(60)}
+  }
+}
+function confetti(n){
+  const colors=['#a94332','#d89a35','#4a9ac2','#fff7e7','#4f8b45','#241a13'];
+  for(let i=0;i<n;i++){const d=document.createElement('div');d.className='confetti';d.style.left=Math.random()*100+'vw';d.style.background=colors[i%colors.length];d.style.animationDuration=(1.1+Math.random()*1.2)+'s';app.appendChild(d);setTimeout(()=>d.remove(),2500)}
+}
+evaluate(true);
+
+const raycaster=new THREE.Raycaster(),ndc=new THREE.Vector2();
+function ndcFrom(x,y){const r=renderer.domElement.getBoundingClientRect();ndc.x=((x-r.left)/r.width)*2-1;ndc.y=-((y-r.top)/r.height)*2+1}
+function act(x,y){
+  ndcFrom(x,y);raycaster.setFromCamera(ndc,camera);const hit=raycaster.intersectObjects(targets,false)[0];if(!hit)return;
+  const c=hit.object.userData;
+  if(deleting){
+    if(c.j===0){toast('La base del paisaje no se borra');return}
+    const type=remove(c.i,c.j,c.k);if(type)undoStack.push({op:'add',i:c.i,j:c.j,k:c.k,type});
+  }else{
+    const normal=hit.face?hit.face.normal:new THREE.Vector3(0,1,0);
+    const i=c.i+Math.round(normal.x),j=c.j+Math.round(normal.y),k=c.k+Math.round(normal.z);
+    if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected)}
+  }
+  evaluate();
+}
+const shownInfo=new Set();
+function openInfoOnce(id){if(!shownInfo.has(id)){shownInfo.add(id);openInfo(id)}}
+
+const cv=renderer.domElement;
+let mode='',moved=false,startX=0,startY=0,lastX=0,lastY=0,pinchStart=0,radiusStart=radius;
+cv.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){mode='rotate';moved=false;startX=lastX=e.touches[0].clientX;startY=lastY=e.touches[0].clientY}
+  else if(e.touches.length===2){mode='pinch';moved=true;const a=e.touches[0],b=e.touches[1];pinchStart=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;radiusStart=radius}
+},{passive:true});
+cv.addEventListener('touchmove',e=>{
+  if(mode==='rotate'&&e.touches.length===1){
+    const t=e.touches[0],dx=t.clientX-lastX,dy=t.clientY-lastY;
+    if(Math.abs(t.clientX-startX)+Math.abs(t.clientY-startY)>8)moved=true;
+    if(moved){theta-=dx*.007;phi-=dy*.007;updateCamera()}
+    lastX=t.clientX;lastY=t.clientY;
+  }else if(mode==='pinch'&&e.touches.length===2){
+    const a=e.touches[0],b=e.touches[1],now=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;
+    radius=radiusStart*(pinchStart/now);updateCamera();
+  }
+},{passive:true});
+cv.addEventListener('touchend',e=>{
+  if(mode==='rotate'&&!moved&&e.changedTouches.length)act(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+  if(e.touches.length===0){mode='';moved=false}
+},{passive:true});
+cv.addEventListener('touchcancel',()=>{mode='';moved=false},{passive:true});
+
+let mouseDown=false,mouseMoved=false;
+cv.addEventListener('mousedown',e=>{mouseDown=true;mouseMoved=false;startX=lastX=e.clientX;startY=lastY=e.clientY});
+addEventListener('mousemove',e=>{if(!mouseDown)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;if(Math.abs(e.clientX-startX)+Math.abs(e.clientY-startY)>6)mouseMoved=true;if(mouseMoved){theta-=dx*.008;phi-=dy*.008;updateCamera()}lastX=e.clientX;lastY=e.clientY});
+addEventListener('mouseup',e=>{if(!mouseDown)return;mouseDown=false;if(!mouseMoved)act(e.clientX,e.clientY)});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+
+$('#rotL').onclick=()=>{theta-=.34;updateCamera()};
+$('#rotR').onclick=()=>{theta+=.34;updateCamera()};
+$('#zin').onclick=()=>{radius-=2.3;updateCamera()};
+$('#zout').onclick=()=>{radius+=2.3;updateCamera()};
+$('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')remove(a.i,a.j,a.k);else place(a.i,a.j,a.k,a.type);evaluate()};
+$('#reset').onclick=()=>{
+  if(!confirm('¿Empezar el paisaje nuevamente?'))return;
+  [...world.keys()].forEach(k=>{const [i,j,l]=k.split(',').map(Number);remove(i,j,l)});
+  undoStack.length=0;shownInfo.clear();mission1Done=mission2Done=false;
+  delete $('#m1').dataset.announced;delete $('#m2').dataset.announced;initialWorld();evaluate(true);renderItems();toast('Paisaje reiniciado');
+};
+
+setTimeout(()=>{$('#helpChip').style.opacity='0'},6500);
+renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();toast('La vista 3D se pausó. Reinicia la página.')});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.2));renderer.setSize(innerWidth,innerHeight)});
+
+(function loop(){
+  requestAnimationFrame(loop);const t=performance.now()/1000;
+  for(const a of animated){
+    if(['puma','fox','pudu','condor','hawk','chicken','camelid','woman','man','child','elder','machi'].includes(a.type)){
+      a.mesh.position.y=a.baseY+Math.sin(t*2+a.phase)*.025;a.mesh.rotation.y=Math.sin(t*.5+a.phase)*.08;
+    }
+  }
+  renderer.render(scene,camera);
+})();
+</script>
+</body>
+</html>
