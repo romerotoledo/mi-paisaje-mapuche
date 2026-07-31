@@ -38,6 +38,7 @@ header{position:absolute;z-index:10;left:0;right:0;top:8px;padding:calc(8px + va
 .badge{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--ochre);color:#fff;flex:none}
 .missionCard.done{opacity:.62}.missionCard.done .badge{background:var(--green)}
 .missionCard p{margin:6px 0 0 37px;font-size:13px;line-height:1.35}
+.missionValue{margin:6px 0 0 37px;color:var(--green2);font-size:11px;font-weight:900;line-height:1.3}
 #helpChip{position:absolute;z-index:12;left:50%;top:calc(69px + var(--safe-top));transform:translateX(-50%);max-width:58vw;border:2px solid var(--earth);border-radius:999px;background:var(--panel);box-shadow:var(--shadow);padding:7px 12px;font-size:11px;font-weight:900;text-align:center;transition:opacity .4s}
 #controls{position:absolute;z-index:14;right:calc(10px + var(--safe-right));top:calc(65px + var(--safe-top));display:flex;flex-direction:column;gap:7px}
 .ctrl{width:47px;height:47px;border:2px solid rgba(97,69,47,.24);border-radius:15px;background:linear-gradient(#fffdf6,#f2e6cc);box-shadow:0 5px 14px rgba(28,20,14,.22),inset 0 1px 0 #fff;font-size:21px;font-weight:900;touch-action:manipulation}
@@ -95,7 +96,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   .institutionalLogo{max-height:24px}.institutionalLogoUa{max-height:20px}
   .institutionalCopy strong{font-size:7px}.institutionalCopy small{font-size:5.8px}
   #helpChip{max-width:52vw;font-size:10px}
-  .ctrl{width:43px;height:43px}
+  .ctrl{width:44px;height:44px}
   .item{flex-basis:66px;min-height:75px}.itemIcon{height:30px;font-size:20px}
 }
 @media(max-height:520px) and (orientation:landscape){
@@ -105,7 +106,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   .subtitle{display:none}
   #missionBtn{top:calc(48px + var(--safe-top))}
   #controls{top:calc(46px + var(--safe-top));flex-direction:row}
-  .ctrl{width:41px;height:41px}
+  .ctrl{width:44px;height:44px}
   #helpChip{display:none}
   #missionPanel{top:calc(96px + var(--safe-top));max-height:48vh}
   footer{padding-top:8px}.tab{min-height:31px;padding:4px 9px}.item{min-height:63px;flex-basis:64px}
@@ -135,10 +136,12 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
   <div class="missionCard" id="m1">
     <div class="missionHead"><span class="badge">1</span> Conociendo el paisaje</div>
     <p>Agrega agua, un volcán, un bosque, un humedal, un cerro y tres animales silvestres diferentes.</p>
+    <div class="missionValue" id="m1relation">El paisaje comienza a organizarse.</div>
   </div>
   <div class="missionCard" id="m2">
     <div class="missionHead"><span class="badge">2</span> El paisaje del lof</div>
-    <p>Agrega una ruka, tres personas, una chacra, animales domésticos y un espacio ceremonial.</p>
+    <p>Agrega una ruka, tres personas de la comunidad, una chacra, animales domésticos, un malal y un espacio ceremonial.</p>
+    <div class="missionValue" id="m2relation">El paisaje está comenzando a organizarse.</div>
   </div>
   <button id="freeMode">Entrar al modo paisaje libre</button>
   <p class="sourceNote">🔊 La pronunciación utiliza una guía sintetizada aproximada. El mapuzugun posee variantes territoriales y sonidos que requieren validación de hablantes. La ambientación musical es original y no reproduce cantos ceremoniales.</p>
@@ -174,6 +177,7 @@ footer{position:absolute;z-index:20;left:0;right:0;bottom:0;padding:16px calc(8p
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="./relations.js"></script>
 <script>
 const $=s=>document.querySelector(s), N=12, MAXY=8;
 const categories=[
@@ -206,22 +210,30 @@ const pieces={
   chicken:{cat:'domestico',kind:'obj',ico:'🐔',mapu:'Achawall',es:'Gallina',desc:'La gallina forma parte de la vida doméstica en épocas históricas.'},
   camelid:{cat:'domestico',kind:'obj',ico:'🦙',mapu:'Chiliweke',es:'Camélido',desc:'El chiliweke fue un animal doméstico importante antes de la llegada europea.'},
 
-  fort:{cat:'arquitectura',kind:'obj',ico:'🏰',mapu:'Malal',es:'Fuerte',desc:'El malal se representa aquí como un recinto fortificado, protegido por una empalizada cerrada y una entrada controlada. Su forma ayuda a comprender la defensa y delimitación de espacios.'},
+  fort:{cat:'arquitectura',kind:'obj',ico:'🪵',mapu:'Malal',es:'Recinto comunitario',desc:'Este recinto de malal ayuda a delimitar y cuidar espacios de la vida comunitaria y productiva, sin representar una disposición única o universal.'},
 
   rewe:{cat:'ceremonial',kind:'obj',ico:'🪵',mapu:'Rewe',es:'Espacio ceremonial',desc:'El rewe forma parte de espacios ceremoniales y posee una importancia especial.'},
   kultrun:{cat:'ceremonial',kind:'obj',ico:'🥁',mapu:'Kultrung',es:'Tambor',desc:'El kultrung es un instrumento ceremonial asociado especialmente a la machi.'},
   kuel:{cat:'ceremonial',kind:'obj',ico:'⛰️',mapu:'Kuel',es:'Montículo',desc:'El kuel es un montículo de tierra vinculado con memoria, territorio y ceremonias.'},
+  foye:{cat:'ceremonial',kind:'obj',ico:'🌳',mapu:'Foye',es:'Canelo',desc:'El foye o canelo es un árbol de gran importancia ceremonial y medicinal.'},
+  machi:{cat:'ceremonial',kind:'obj',ico:'🥁',mapu:'Machi',es:'Autoridad espiritual',desc:'La machi cumple funciones espirituales y medicinales, y participa en ceremonias importantes para la comunidad.'},
+  lonko:{cat:'ceremonial',kind:'obj',ico:'🪶',mapu:'Lonko',es:'Autoridad comunitaria',desc:'El lonko cumple un papel de conducción, representación y organización dentro de la comunidad, y puede participar en encuentros y ceremonias. Sus funciones pueden variar según el territorio, el contexto y el periodo.'},
 
   woman:{cat:'social',kind:'obj',ico:'👩',mapu:'Domo',es:'Mujer',desc:'Las personas participan en la vida familiar, productiva, social y ceremonial.'},
   man:{cat:'social',kind:'obj',ico:'👨',mapu:'Wentru',es:'Hombre',desc:'Las personas participan en la vida familiar, productiva, social y ceremonial.'},
-  child:{cat:'social',kind:'obj',ico:'🧒',mapu:'Pichi che',es:'Niña o niño',desc:'Las niñas y los niños aprenden observando, jugando y participando en la vida comunitaria.'},
-  elder:{cat:'social',kind:'obj',ico:'🧓',mapu:'Fücha che',es:'Persona mayor',desc:'Las personas mayores conservan recuerdos, experiencias y conocimientos importantes.'},
-  machi:{cat:'social',kind:'obj',ico:'🥁',mapu:'Machi',es:'Autoridad espiritual',desc:'La machi cumple un papel espiritual y medicinal dentro de la comunidad.'},
-  lonko:{cat:'social',kind:'obj',ico:'🪶',mapu:'Lonko',es:'Autoridad tradicional',desc:'El lonko es una autoridad tradicional que orienta y representa a su comunidad.'}
+  girl:{cat:'social',kind:'obj',ico:'👧',mapu:'Pichi domo',es:'Niña',desc:'Las niñas aprenden observando, jugando y participando en la vida comunitaria.'},
+  boy:{cat:'social',kind:'obj',ico:'👦',mapu:'Pichi wentru',es:'Niño',desc:'Los niños aprenden observando, jugando y participando en la vida comunitaria.'},
+  elder:{cat:'social',kind:'obj',ico:'🧓',mapu:'Fücha che',es:'Persona mayor',desc:'Las personas mayores conservan recuerdos, experiencias y conocimientos importantes.'}
 };
 
 let category='ambiental', selected='grass', deleting=false, soundOn=true, freeMode=false;
 const app=$('#app'), scene=new THREE.Scene();
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
+let reducedMotion=motionPreference.matches,pageVisible=!document.hidden;
+const lowPowerDevice=(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<=4)||(navigator.deviceMemory&&navigator.deviceMemory<=4);
+const updateMotionPreference=event=>{reducedMotion=event.matches};
+if(motionPreference.addEventListener)motionPreference.addEventListener('change',updateMotionPreference);else if(motionPreference.addListener)motionPreference.addListener(updateMotionPreference);
+document.addEventListener('visibilitychange',()=>{pageVisible=!document.hidden});
 scene.fog=new THREE.Fog(0xd9e5d2,38,85);
 const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,1000);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'default'});
@@ -240,6 +252,24 @@ ground.rotation.x=-Math.PI/2;ground.position.y=-.51;scene.add(ground);
 
 const boxGeo=new THREE.BoxGeometry(1,1,1), world=new Map(), targets=[], undoStack=[], animated=[];
 const key=(i,j,k)=>`${i},${j},${k}`;
+function getLogicalObjects(){
+  const objects=[];
+  world.forEach((record,cell)=>{
+    const [i,j,k]=cell.split(',').map(Number),definition=pieces[record.type];
+    objects.push({type:record.type,category:definition?definition.cat:'',i,j,k,mesh:record.mesh,record});
+  });
+  return objects;
+}
+function getObjectsByType(type){return LandscapeRelations.getObjectsByType(getLogicalObjects(),type)}
+function getObjectsByCategory(category){return LandscapeRelations.getObjectsByCategory(getLogicalObjects(),category)}
+function gridDistance(a,b){return LandscapeRelations.gridDistance(a,b)}
+function isNear(typeA,typeB,maxDistance){return LandscapeRelations.isNear(getLogicalObjects(),typeA,typeB,maxDistance)}
+function isNearAny(type,targetTypes,maxDistance){return LandscapeRelations.isNearAny(getLogicalObjects(),type,targetTypes,maxDistance)}
+function countNearby(type,targetType,maxDistance){return LandscapeRelations.countNearby(getLogicalObjects(),type,targetType,maxDistance)}
+function getNearbyObjects(object,types,maxDistance){return LandscapeRelations.getNearbyObjects(getLogicalObjects(),object,types,maxDistance)}
+function evaluateMalalProtection(object){return LandscapeRelations.evaluateMalalProtection(object,getLogicalObjects())}
+function evaluateLandscapeRelations(){return LandscapeRelations.evaluateLandscapeRelations(getLogicalObjects())}
+function getRelationScore(object){return LandscapeRelations.getRelationScore(object,evaluateLandscapeRelations().relations)}
 function mat(c,transparent=false,opacity=.74){
   return new THREE.MeshStandardMaterial({color:c,transparent,opacity:transparent?opacity:1,flatShading:true,roughness:.88,metalness:0});
 }
@@ -270,6 +300,45 @@ function ellipsoid(color,x,y,z,sx,sy,sz){
 function contactShadow(radius=.46,opacity=.18,x=0,z=0){
   const m=new THREE.Mesh(new THREE.CircleGeometry(radius,20),new THREE.MeshBasicMaterial({color:0x2d241b,transparent:true,opacity,depthWrite:false}));
   m.rotation.x=-Math.PI/2;m.position.set(x,.012,z);return m;
+}
+const smokeGeometry=new THREE.IcosahedronGeometry(.1,0),smokeMaterial=new THREE.MeshBasicMaterial({color:0xd9d6cf,transparent:true,opacity:.28,depthWrite:false});
+const indicatorGeometry=new THREE.OctahedronGeometry(.09,0),indicatorMaterials={
+  good:new THREE.MeshBasicMaterial({color:0x69b84c}),progress:new THREE.MeshBasicMaterial({color:0xe0a43b}),
+  suggestion:new THREE.MeshBasicMaterial({color:0x78a9c5}),missing:new THREE.MeshBasicMaterial({color:0x9a8979})
+};
+const indicatorPool=[];
+for(let n=0;n<5;n++){
+  const indicator=new THREE.Mesh(indicatorGeometry,indicatorMaterials.good);indicator.visible=false;indicator.userData={expires:0,target:null,phase:n};scene.add(indicator);indicatorPool.push(indicator);
+}
+function showObjectIndicator(object,state='good',duration=2600){
+  if(!object||!object.mesh)return;
+  const indicator=indicatorPool.find(item=>!item.visible)||indicatorPool.reduce((oldest,item)=>item.userData.expires<oldest.userData.expires?item:oldest,indicatorPool[0]);
+  indicator.material=indicatorMaterials[state]||indicatorMaterials.suggestion;indicator.userData.target=object.mesh;indicator.userData.expires=Date.now()+duration;indicator.visible=true;
+}
+function clearIndicatorsForMesh(mesh){indicatorPool.forEach(item=>{if(item.userData.target===mesh){item.visible=false;item.userData.target=null}})}
+function clearAllIndicators(){indicatorPool.forEach(item=>{item.visible=false;item.userData.target=null;item.userData.expires=0})}
+function updateIndicators(time){
+  const now=Date.now();
+  indicatorPool.forEach(item=>{
+    const target=item.userData.target;
+    if(!item.visible||!target)return;
+    if(now>=item.userData.expires||!target.parent){item.visible=false;item.userData.target=null;return}
+    item.position.set(target.position.x,target.position.y+1.55,target.position.z);
+    const pulse=reducedMotion?1:1+Math.sin(time*3+item.userData.phase)*.12;item.scale.setScalar(pulse);
+  });
+}
+const cloudGeometry=new THREE.DodecahedronGeometry(.55,0),cloudMaterial=new THREE.MeshStandardMaterial({color:0xf7f5eb,flatShading:true,roughness:1,transparent:true,opacity:.82}),clouds=[];
+function createClouds(){
+  const count=lowPowerDevice?2:3;
+  for(let n=0;n<count;n++){
+    const cloud=new THREE.Group();
+    [[0,0,0,1],[-.48,-.05,.02,.72],[.5,-.03,-.03,.8],[.12,.18,0,.68]].forEach(p=>{const puff=new THREE.Mesh(cloudGeometry,cloudMaterial);puff.position.set(p[0],p[1],p[2]);puff.scale.setScalar(p[3]);cloud.add(puff)});
+    cloud.userData={startX:-6+n*8,speed:.08+n*.018};cloud.position.set(cloud.userData.startX,6.4+n*.65,N+3+n*1.8);cloud.scale.setScalar(1.15+n*.12);scene.add(cloud);clouds.push(cloud);
+  }
+}
+function resetClouds(){clouds.forEach((cloud,n)=>{cloud.position.x=cloud.userData.startX;cloud.position.y=6.4+n*.65;cloud.visible=!reducedMotion})}
+function updateClouds(delta){
+  clouds.forEach(cloud=>{cloud.visible=!reducedMotion;if(reducedMotion)return;cloud.position.x+=delta*cloud.userData.speed;if(cloud.position.x>N+9)cloud.position.x=-8});
 }
 function human(opts={}){
   const o=Object.assign({clothes:0x5e7049,accent:0xc28b3d,pants:0x33251d,hair:0x241914,skin:0xb77c55,scale:1,skirt:false,poncho:false,grayHair:false,headband:false,staff:false,drum:false},opts);
@@ -302,46 +371,47 @@ function quadruped(type){
     fox:{body:0xbc6630,mark:0xf1e4ce,scale:.82},
     pudu:{body:0x765039,mark:0xc49a75,scale:.7}
   }[type];
-  const g=new THREE.Group();g.scale.setScalar(spec.scale);
+  const g=new THREE.Group(),head=new THREE.Group();g.scale.setScalar(spec.scale);
   g.add(ellipsoid(spec.body,0,.49,0,.42,.24,.22));
-  g.add(ellipsoid(spec.body,.38,.63,0,.19,.18,.17));
-  g.add(ellipsoid(spec.mark,.5,.59,0,.11,.08,.12));
+  head.position.set(.38,.63,0);head.add(ellipsoid(spec.body,0,0,0,.19,.18,.17));
+  head.add(ellipsoid(spec.mark,.12,-.04,0,.11,.08,.12));
+  head.add(part(new THREE.ConeGeometry(.065,.18,5),spec.body,-.03,.2,.105,0,0,-.1));
+  head.add(part(new THREE.ConeGeometry(.065,.18,5),spec.body,-.03,.2,-.105,0,0,-.1));
+  head.add(ellipsoid(0x1e1815,.11,.06,.105,.018,.022,.014));
+  head.add(ellipsoid(0x1e1815,.11,.06,-.105,.018,.022,.014));g.add(head);
   [[-.23,.13],[-.23,-.13],[.2,.13],[.2,-.13]].forEach(p=>{
     g.add(part(new THREE.CylinderGeometry(.035,.045,.38,6),spec.body,p[0],.2,p[1]));
     g.add(ellipsoid(0x3b2b22,p[0]+.035,.025,p[1],.075,.03,.055));
   });
-  g.add(part(new THREE.ConeGeometry(.065,.18,5),spec.body,.35,.83,.105,0,0,-.1));
-  g.add(part(new THREE.ConeGeometry(.065,.18,5),spec.body,.35,.83,-.105,0,0,-.1));
-  g.add(ellipsoid(0x1e1815,.49,.69,.105,.018,.022,.014));
-  g.add(ellipsoid(0x1e1815,.49,.69,-.105,.018,.022,.014));
   if(type==='puma'){
     g.add(part(new THREE.CylinderGeometry(.045,.065,.52,7),spec.body,-.47,.58,0,0,0,-1.05));
     g.add(ellipsoid(spec.mark,0,.43,.19,.25,.07,.05));
   }else if(type==='fox'){
     g.add(part(new THREE.ConeGeometry(.15,.58,7),spec.body,-.5,.58,0,0,0,Math.PI/2));
     g.add(part(new THREE.ConeGeometry(.085,.2,7),spec.mark,-.78,.58,0,0,0,Math.PI/2));
-    g.add(ellipsoid(spec.mark,.38,.5,.15,.13,.14,.05));
+    head.add(ellipsoid(spec.mark,0,-.13,.15,.13,.14,.05));
   }else{
-    g.add(part(new THREE.CylinderGeometry(.018,.022,.22,5),0x4c3426,.4,.91,.07,0,0,-.25));
-    g.add(part(new THREE.CylinderGeometry(.018,.022,.22,5),0x4c3426,.4,.91,-.07,0,0,-.25));
-    g.add(ellipsoid(spec.mark,.4,.63,.16,.12,.1,.04));
+    head.add(part(new THREE.CylinderGeometry(.018,.022,.22,5),0x4c3426,.02,.28,.07,0,0,-.25));
+    head.add(part(new THREE.CylinderGeometry(.018,.022,.22,5),0x4c3426,.02,.28,-.07,0,0,-.25));
+    head.add(ellipsoid(spec.mark,.02,0,.16,.12,.1,.04));g.userData.head=head;
   }
   return g;
 }
 function bird(type){
   const condor=type==='condor',body=condor?0x24211d:0x795431,accent=condor?0xf1eee8:0xc69a66;
-  const g=new THREE.Group();g.scale.setScalar(condor?1:.78);
+  const g=new THREE.Group(),flyer=new THREE.Group();g.scale.setScalar(condor?1:.78);
   g.add(ellipsoid(0x72604d,0,.1,0,.27,.12,.22));
-  g.add(part(new THREE.CylinderGeometry(.018,.024,.23,5),0xb98632,-.07,.27,.04));
-  g.add(part(new THREE.CylinderGeometry(.018,.024,.23,5),0xb98632,.07,.27,.04));
-  g.add(ellipsoid(body,0,.52,0,.22,.26,.18));
-  g.add(ellipsoid(body,-.27,.56,0,.33,.055,.2));
-  g.add(ellipsoid(body,.27,.56,0,.33,.055,.2));
-  g.add(ellipsoid(accent,.13,.7,0,.11,.12,.1));
-  g.add(part(new THREE.ConeGeometry(.055,.18,5),0xd89a35,.27,.69,0,0,0,-Math.PI/2));
-  g.add(ellipsoid(0x16130f,.19,.74,.082,.016,.018,.012));
-  if(condor)g.add(part(new THREE.TorusGeometry(.12,.035,6,12),0xf4f0e7,.08,.66,0,Math.PI/2,0,0));
-  else g.add(ellipsoid(0xe8d5ad,0,.48,.17,.13,.16,.045));
+  flyer.add(part(new THREE.CylinderGeometry(.018,.024,.23,5),0xb98632,-.07,.27,.04));
+  flyer.add(part(new THREE.CylinderGeometry(.018,.024,.23,5),0xb98632,.07,.27,.04));
+  flyer.add(ellipsoid(body,0,.52,0,.22,.26,.18));
+  flyer.add(ellipsoid(body,-.27,.56,0,.33,.055,.2));
+  flyer.add(ellipsoid(body,.27,.56,0,.33,.055,.2));
+  flyer.add(ellipsoid(accent,.13,.7,0,.11,.12,.1));
+  flyer.add(part(new THREE.ConeGeometry(.055,.18,5),0xd89a35,.27,.69,0,0,0,-Math.PI/2));
+  flyer.add(ellipsoid(0x16130f,.19,.74,.082,.016,.018,.012));
+  if(condor)flyer.add(part(new THREE.TorusGeometry(.12,.035,6,12),0xf4f0e7,.08,.66,0,Math.PI/2,0,0));
+  else flyer.add(ellipsoid(0xe8d5ad,0,.48,.17,.13,.16,.045));
+  g.add(flyer);if(condor)g.userData.flyer=flyer;
   return g;
 }
 function camelid(){
@@ -387,11 +457,17 @@ function build(type){
     for(let a=0;a<8;a++){const x=-.34+(a%4)*.22,z=-.27+Math.floor(a/4)*.5;g.add(part(new THREE.CylinderGeometry(.018,.026,.48,6),0x4f843c,x,.25,z))}
     g.add(part(new THREE.SphereGeometry(.08,8,6),0xe4a7c4,.18,.16,.1));
   } else if(type==='forest'){
+    const swayParts=[];
     [[-.28,0],[.24,.1],[0,-.24]].forEach((p,i)=>{
       g.add(part(new THREE.CylinderGeometry(.07,.11,.68,7),0x704827,p[0],.34,p[1]));
-      g.add(part(new THREE.DodecahedronGeometry(.31,0),i%2?0x568f43:0x407b38,p[0],.82,p[1]));
-      g.add(part(new THREE.DodecahedronGeometry(.23,0),i%2?0x6ba351:0x4d8b40,p[0]-.08,.99,p[1]+.03));
-    });
+      const lower=part(new THREE.DodecahedronGeometry(.31,0),i%2?0x568f43:0x407b38,p[0],.82,p[1]),upper=part(new THREE.DodecahedronGeometry(.23,0),i%2?0x6ba351:0x4d8b40,p[0]-.08,.99,p[1]+.03);
+      g.add(lower);g.add(upper);swayParts.push(lower,upper);
+    });g.userData.swayParts=swayParts;
+  } else if(type==='foye'){
+    g.add(part(new THREE.CylinderGeometry(.08,.12,.82,7),0x765035,0,.41,0));
+    const swayParts=[part(new THREE.DodecahedronGeometry(.38,0),0x365f3d,0,.93,0),part(new THREE.DodecahedronGeometry(.29,0),0x4b7b4b,-.12,1.16,.03),part(new THREE.DodecahedronGeometry(.24,0),0x5d8e59,.16,1.12,-.03)];
+    swayParts.forEach(part=>g.add(part));g.userData.swayParts=swayParts;
+    [[-.16,.98,.28],[.2,1.14,.2],[.05,1.29,.04]].forEach(p=>{const flower=ellipsoid(0xf3eee0,p[0],p[1],p[2],.035,.025,.035);g.add(flower);swayParts.push(flower)});
   } else if(type==='hill'){
     g.add(part(new THREE.CylinderGeometry(.69,.78,.18,12),0x617f49,0,.09,0));
     g.add(part(new THREE.ConeGeometry(.66,.78,12),0x719252,0,.48,0));
@@ -402,9 +478,9 @@ function build(type){
     g.add(part(new THREE.ConeGeometry(.31,.34,14),0xe8ece5,0,1.08,0));
     g.add(part(new THREE.CylinderGeometry(.12,.18,.045,14),0x4a3c35,0,1.22,0));
   } else if(['puma','fox','pudu'].includes(type)){
-    g.add(quadruped(type));
+    const animal=quadruped(type);g.add(animal);if(type==='pudu')g.userData.head=animal.userData.head;
   } else if(['condor','hawk'].includes(type)){
-    g.add(bird(type));
+    const birdModel=bird(type);g.add(birdModel);if(type==='condor')g.userData.flyer=birdModel.userData.flyer;
   } else if(type==='corn'||type==='potato'){
     g.add(part(new THREE.BoxGeometry(.9,.1,.9),0x684529,0,.05,0));
     [[-.25,-.22],[.22,-.18],[-.04,.22],[.26,.24]].forEach((p,i)=>{
@@ -428,6 +504,11 @@ function build(type){
     for(let a=0;a<8;a++){const q=a*Math.PI/4;g.add(ellipsoid(0x6a5c50,Math.cos(q)*.25,.08,Math.sin(q)*.25,.1,.075,.08))}
     g.add(part(new THREE.ConeGeometry(.15,.47,8),0xf08b22,0,.31,0));
     g.add(part(new THREE.ConeGeometry(.08,.31,8),0xffc84b,.03,.3,.02));
+    const smoke=[];
+    for(let s=0;s<(lowPowerDevice?3:4);s++){
+      const particle=new THREE.Mesh(smokeGeometry,smokeMaterial);particle.userData={age:s/(lowPowerDevice?3:4),speed:.12+s*.015,offset:(s%2 ? .06 : -.05)};particle.visible=false;g.add(particle);smoke.push(particle);
+    }
+    g.userData.smoke=smoke;
   } else if(type==='metawe'){
     g.add(part(new THREE.SphereGeometry(.2,10,8),0xb96e45,0,.22,0));
     g.add(part(new THREE.CylinderGeometry(.08,.11,.16,9),0xb96e45,0,.43,0));
@@ -458,7 +539,8 @@ function build(type){
     g.add(part(new THREE.CylinderGeometry(.5,.8,.58,16),0x5f8a3c,0,.42,0));
   } else if(type==='woman')g.add(human({clothes:0x56385f,accent:0xc98c43,skirt:true,poncho:true,hair:0x201713}));
   else if(type==='man')g.add(human({clothes:0x496044,accent:0x8f4934,poncho:true,hair:0x2a1c15}));
-  else if(type==='child')g.add(human({clothes:0x3e83ad,accent:0xe0a03f,scale:.72,hair:0x352117}));
+  else if(type==='girl')g.add(human({clothes:0x7c4f82,accent:0xe0a03f,scale:.72,skirt:true,hair:0x352117}));
+  else if(type==='boy')g.add(human({clothes:0x3e83ad,accent:0xd98a37,scale:.72,hair:0x352117}));
   else if(type==='elder')g.add(human({clothes:0x69586e,accent:0xc5a46c,scale:.9,grayHair:true,poncho:true,staff:true}));
   else if(type==='machi')g.add(human({clothes:0x315fa8,accent:0x1d2938,skirt:true,poncho:true,headband:true,drum:true,hair:0x161c22}));
   else if(type==='lonko')g.add(human({clothes:0x49372d,accent:0xa94332,poncho:true,headband:true,staff:true,hair:0x22170f}));
@@ -466,25 +548,100 @@ function build(type){
 }
 function addTarget(m){targets.push(m)}
 function removeTarget(m){const i=targets.indexOf(m);if(i>=0)targets.splice(i,1)}
+function registerAnimation(type,mesh,i,j,k){
+  if(!['water','forest','foye','hearth','condor','pudu','chicken'].includes(type))return;
+  animated.push({
+    type,mesh,i,j,k,phase:Math.random()*Math.PI*2,baseX:mesh.position.x,baseY:mesh.position.y,baseZ:mesh.position.z,
+    state:'rest',elapsed:0,nextAction:type==='condor'?14+Math.random()*18:type==='pudu'?8+Math.random()*12:type==='chicken'?4+Math.random()*7:0,
+    swayParts:mesh.userData.swayParts||[],smoke:mesh.userData.smoke||[],head:mesh.userData.head||null,flyer:mesh.userData.flyer||null
+  });
+}
+function resetAnimatedEntry(entry){
+  entry.mesh.position.set(entry.baseX,entry.baseY,entry.baseZ);entry.mesh.rotation.y=0;entry.mesh.scale.set(1,1,1);
+  entry.swayParts.forEach(part=>part.rotation.set(0,0,0));
+  if(entry.head)entry.head.rotation.y=0;
+  if(entry.flyer){entry.flyer.position.set(0,0,0);entry.flyer.rotation.set(0,0,0)}
+  entry.smoke.forEach(particle=>particle.visible=false);
+}
+function animateEntry(entry,time,delta){
+  if(reducedMotion){resetAnimatedEntry(entry);return}
+  if(entry.type==='water'){
+    const wave=Math.sin(time*.42+entry.phase);entry.mesh.position.y=entry.baseY+wave*.006;entry.mesh.scale.x=entry.mesh.scale.z=1+wave*.002;return;
+  }
+  if(entry.type==='forest'||entry.type==='foye'){
+    entry.swayParts.forEach((part,index)=>{part.rotation.z=Math.sin(time*.3+entry.phase+index*.37)*.018;part.rotation.x=Math.cos(time*.24+entry.phase+index*.21)*.008});return;
+  }
+  if(entry.type==='hearth'){
+    entry.smoke.forEach((particle,index)=>{
+      const data=particle.userData;data.age=(data.age+delta*data.speed)%1;particle.visible=data.age<.88;
+      particle.position.set(data.offset+Math.sin(time*.7+index)*.035,.42+data.age*.95,Math.cos(time*.5+index)*.025);
+      particle.scale.setScalar(.5+data.age*.9);
+    });return;
+  }
+  if(entry.type==='condor'&&entry.flyer){
+    entry.elapsed+=delta;
+    if(entry.state==='rest'){
+      entry.flyer.position.set(0,0,0);
+      if(entry.elapsed>=entry.nextAction){entry.state='flight';entry.elapsed=0}
+    }else if(entry.state==='flight'){
+      const progress=Math.min(1,entry.elapsed/10),angle=progress*Math.PI*2;
+      entry.flyer.position.set(Math.cos(angle)*.9,.62+Math.sin(progress*Math.PI)*.35,Math.sin(angle)*.9);entry.flyer.rotation.y=-angle;
+      if(progress>=1){entry.state='return';entry.elapsed=0}
+    }else{
+      const progress=Math.min(1,entry.elapsed/2.4),ease=1-(1-progress)*(1-progress);
+      entry.flyer.position.multiplyScalar(1-ease);entry.flyer.rotation.y*=1-ease;
+      if(progress>=1){entry.state='rest';entry.elapsed=0;entry.nextAction=18+Math.random()*22;entry.flyer.position.set(0,0,0)}
+    }return;
+  }
+  if(entry.type==='pudu'&&entry.head){
+    entry.elapsed+=delta;
+    if(entry.state==='rest'&&entry.elapsed>=entry.nextAction){entry.state='look';entry.elapsed=0}
+    if(entry.state==='look'){
+      const progress=Math.min(1,entry.elapsed/2.6);entry.head.rotation.y=Math.sin(progress*Math.PI)*.34;
+      if(progress>=1){entry.head.rotation.y=0;entry.state='rest';entry.elapsed=0;entry.nextAction=8+Math.random()*14}
+    }return;
+  }
+  if(entry.type==='chicken'){
+    entry.elapsed+=delta;
+    const ground=world.get(key(entry.i,0,entry.k)),canWalk=ground&&ground.type!=='water';
+    if(entry.state==='rest'&&entry.elapsed>=entry.nextAction){
+      if(canWalk){const angle=Math.random()*Math.PI*2;entry.walkX=Math.cos(angle)*.2;entry.walkZ=Math.sin(angle)*.2;entry.state='walk';entry.duration=1.8+Math.random()*1.4}else entry.nextAction+=5;
+      entry.elapsed=0;
+    }else if(entry.state==='walk'){
+      const progress=Math.min(1,entry.elapsed/entry.duration),step=Math.sin(progress*Math.PI);entry.mesh.position.set(entry.baseX+entry.walkX*step,entry.baseY,entry.baseZ+entry.walkZ*step);entry.mesh.rotation.y=Math.atan2(entry.walkX,entry.walkZ);
+      if(progress>=1){entry.mesh.position.set(entry.baseX,entry.baseY,entry.baseZ);entry.state='look';entry.elapsed=0;entry.duration=1.2}
+    }else if(entry.state==='look'){
+      entry.mesh.rotation.y=Math.sin(entry.elapsed*2.4)*.16;
+      if(entry.elapsed>=entry.duration){entry.mesh.rotation.y=0;entry.state='rest';entry.elapsed=0;entry.nextAction=4+Math.random()*8}
+    }
+  }
+}
 function place(i,j,k,type,rotation=0){
   if(i<0||k<0||i>=N||k>=N||j<0||j>=MAXY||world.has(key(i,j,k)))return null;
   const d=pieces[type];let mesh,collider;
   if(d.kind==='block'){
     mesh=tile(type);mesh.position.set(i,j,k);scene.add(mesh);
     collider=new THREE.Mesh(boxGeo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
-    collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);
+    collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);registerAnimation(type,mesh,i,j,k);
   }else{
     mesh=build(type);mesh.position.set(i,j-.5,k);scene.add(mesh);
     collider=new THREE.Mesh(boxGeo,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
     collider.position.set(i,j,k);collider.userData={i,j,k};scene.add(collider);addTarget(collider);
-    animated.push({mesh,baseY:mesh.position.y,baseRotation:mesh.rotation.y,phase:Math.random()*6.28,type});
+    registerAnimation(type,mesh,i,j,k);
   }
   world.set(key(i,j,k),{type,mesh,collider,rotation});return true;
 }
 function remove(i,j,k){
   const r=world.get(key(i,j,k));if(!r)return null;
-  for(let a=animated.length-1;a>=0;a--)if(animated[a].mesh===r.mesh)animated.splice(a,1);
+  for(let a=animated.length-1;a>=0;a--)if(animated[a].mesh===r.mesh){resetAnimatedEntry(animated[a]);animated.splice(a,1)}
+  clearIndicatorsForMesh(r.mesh);
   scene.remove(r.mesh);removeTarget(r.collider);if(r.collider!==r.mesh)scene.remove(r.collider);
+  if(r.collider!==r.mesh&&r.collider.material)r.collider.material.dispose();
+  if(pieces[r.type]&&pieces[r.type].kind!=='block')r.mesh.traverse(child=>{
+    if(!child.isMesh)return;
+    if(child.geometry&&child.geometry!==smokeGeometry)child.geometry.dispose();
+    if(child.material&&child.material!==smokeMaterial)child.material.dispose();
+  });
   world.delete(key(i,j,k));return {type:r.type,rotation:r.rotation||0};
 }
 function paintGround(i,k,type){
@@ -501,6 +658,7 @@ function initialWorld(){
   place(2,1,2,'forest');place(3,1,3,'forest');
 }
 initialWorld();
+createClouds();
 
 const target=new THREE.Vector3((N-1)/2,.55,(N-1)/2);let radius=20.5,theta=-.72,phi=.98;
 function updateCamera(){
@@ -551,7 +709,65 @@ function openInfo(id){
   pronounce(id);
 }
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2100)}
-const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',woman:'Do-mo',man:'Wen-tru',child:'Pi-chi che',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
+const feedbackTimes=new Map();let lastFeedbackAt=0,lastFeedbackPriority=-1;
+function showLandscapeFeedback(messageId,text,cooldown=16000,priority=1){
+  const now=Date.now(),previous=feedbackTimes.get(messageId)||0;
+  if(now-previous<cooldown)return false;
+  if(now-lastFeedbackAt<2600&&priority<=lastFeedbackPriority)return false;
+  feedbackTimes.set(messageId,now);lastFeedbackAt=now;lastFeedbackPriority=priority;toast(text);return true;
+}
+function resetLandscapeFeedback(){feedbackTimes.clear();lastFeedbackAt=0;lastFeedbackPriority=-1}
+function relationMessage(relation){
+  const type=relation.object.type,d=relation;
+  if(relation.id==='ruka-water')return relation.state==='good'?'🏡 La familia tiene acceso al río.':'Las viviendas suelen ubicarse cerca de fuentes de agua.';
+  if(relation.id==='pudu-forest')return relation.state==='good'?'🌿 Este lugar parece adecuado para el pudú.':'El pudú necesita refugio entre los árboles.';
+  if(relation.id==='wildlife-highlands')return relation.state==='good'?(type==='condor'?'🦅 Desde aquí el cóndor puede recorrer el paisaje.':'⛰️ Este animal encuentra un paisaje amplio cerca de los cerros.'):'Prueba acercar este animal a los cerros o volcanes.';
+  if(relation.id==='wetland-fauna')return relation.state==='good'?'🪷 El humedal reúne agua, plantas y fauna.':'Prueba acercar esta especie al humedal o al agua.';
+  if(relation.id==='domestic-ruka'){
+    if(relation.state!=='good')return 'Este elemento forma parte de la vida cotidiana. Prueba acercarlo a la ruka.';
+    if(type==='hearth')return '🔥 El fogón acompaña la vida de la ruka.';
+    if(type==='metawe')return '🏺 El metawe está cerca del espacio doméstico.';
+    if(type==='chicken')return '🐔 Las gallinas permanecen cerca del lugar habitado.';
+    return '🦙 El chiliweke permanece cerca del espacio habitado.';
+  }
+  if(relation.id==='crop-organization'){
+    if(d.score===0)return '¿Quién cuidará esta chacra? Intenta acercarla a la vivienda.';
+    if(d.score>=2)return '🌾 El espacio productivo comienza a organizarse.';
+    if(d.water)return '💧 La chacra tiene agua cerca.';
+    if(d.ruka)return '🌱 La chacra está cerca del espacio habitado.';
+    return '🌾 El cultivo está dentro de un espacio cuidado.';
+  }
+  if(relation.id==='malal-protection'){
+    if(d.state==='good')return type==='camelid'?'🦙 Los animales están protegidos por el malal.':type==='chicken'?'Ahora el espacio doméstico está protegido.':'🌾 El cultivo se encuentra dentro de un espacio cuidado.';
+    if(d.state==='progress')return '🌱 El espacio comienza a organizarse.';
+    return 'Los animales domésticos necesitan un espacio cuidado.';
+  }
+  if(relation.id==='ceremonial-cluster')return relation.state==='good'?(type==='foye'?'🌳 El foye acompaña el espacio ceremonial.':'🥁 Las personas y objetos ceremoniales se encuentran reunidos.'):'Prueba reunir los elementos ceremoniales en un mismo sector del paisaje.';
+  return '🌿 Las distintas partes del paisaje comienzan a relacionarse.';
+}
+function showRelationFeedback(type,i,k){
+  const objects=getLogicalObjects(),result=LandscapeRelations.evaluateLandscapeRelations(objects);
+  const focus=objects.find(object=>object.type===type&&object.i===i&&object.k===k);
+  let options=focus?result.relations.filter(item=>item.object===focus):[];
+  if(['water','forest','hill','volcano','fence','fort'].includes(type)){
+    const affected=result.relations.filter(item=>gridDistance(item.object,{i,k})<=4&&(
+      type==='water'?['ruka-water','crop-organization'].includes(item.id):
+      type==='forest'?item.id==='pudu-forest':
+      type==='hill'||type==='volcano'?item.id==='wildlife-highlands':item.id==='malal-protection'
+    ));
+    options=affected.length?affected:options;
+  }
+  const rank={good:3,progress:2,suggestion:1,missing:0};options.sort((a,b)=>rank[b.state]-rank[a.state]);
+  const chosen=options[0];
+  if(chosen){
+    const shown=showLandscapeFeedback(`${chosen.id}-${chosen.object.type}-${chosen.state}`,relationMessage(chosen),chosen.state==='good'?18000:26000,chosen.state==='good'?2:1);
+    if(shown)showObjectIndicator(chosen.object,chosen.state);return shown;
+  }
+  const general={wetland:'🪷 El humedal reúne agua, plantas y fauna.',forest:'🌳 El bosque ofrece refugio a los animales.',hill:'⛰️ Los cerros ayudan a organizar y reconocer el paisaje.'}[type];
+  if(general)return showLandscapeFeedback(`general-${type}`,general,22000,1);
+  return false;
+}
+const pronunciations={grass:'Ka-chu',earth:'Ma-pu',water:'Ko',wetland:'Me-no-ko',forest:'Ma-wi-sa',hill:'Wing-kul',volcano:'Se-güñ',puma:'Pan-gui',fox:'Ngü-rü',condor:'Mañ-ke',pudu:'Pü-du',hawk:'Ñam-ku',corn:'Wa',potato:'Po-ñü',fishing:'Chall-wa-tun',ruka:'Ru-ka',hearth:'Kü-tral',metawe:'Me-ta-we',fence:'Ma-lal',fort:'Ma-lal',chicken:'A-cha-wall',camelid:'Chi-li-we-ke',rewe:'Re-we',kultrun:'Kul-trung',kuel:'Ku-el',foye:'Fo-ye',woman:'Do-mo',man:'Wen-tru',girl:'Pi-chi do-mo',boy:'Pi-chi wen-tru',elder:'Fü-cha che',machi:'Ma-chi',lonko:'Lon-ko'};
 let audioCtx=null,musicTimer=null,musicStep=0;
 function getAudioContext(){
   const AudioEngine=window.AudioContext||window.webkitAudioContext;if(!AudioEngine)return null;
@@ -581,20 +797,35 @@ $('#sound').setAttribute('aria-label','Pronunciación y música');
 $('#sound').onclick=()=>{soundOn=!soundOn;$('#sound').textContent=soundOn?'🔊':'🔇';if(soundOn){startMusic();pronounce(selected)}else{stopMusic();if('speechSynthesis'in window)speechSynthesis.cancel()}toast(soundOn?'Pronunciación y música activadas':'Sonido desactivado')};
 
 function countTypes(){const c={};world.forEach(r=>c[r.type]=(c[r.type]||0)+1);return c}
+function missionRelationAssessment(mission){
+  const relations=evaluateLandscapeRelations().relations;
+  const ids=mission===1?['pudu-forest','wildlife-highlands','wetland-fauna']:['ruka-water','domestic-ruka','crop-organization','malal-protection','ceremonial-cluster'];
+  const relevant=relations.filter(item=>ids.includes(item.id)),good=relevant.filter(item=>item.state==='good').length,progress=relevant.filter(item=>item.state==='progress').length;
+  if(mission===1){
+    if(good>=3)return 'El paisaje presenta buenas relaciones entre ambientes y animales.';
+    if(good>0)return 'Varias especies encontraron un ambiente adecuado.';
+    return 'El paisaje comienza a organizarse.';
+  }
+  if(good>=5)return 'El paisaje se encuentra equilibrado.';
+  if(good+progress>=2)return 'El lof presenta varias relaciones adecuadas.';
+  return 'El paisaje está comenzando a organizarse.';
+}
 function evaluate(silent=false){
   const c=countTypes();
   const fauna=['puma','fox','condor','pudu','hawk'].filter(x=>(c[x]||0)>0).length;
   mission1Done=(c.water||0)>0&&(c.volcano||0)>0&&(c.forest||0)>0&&(c.wetland||0)>0&&(c.hill||0)>0&&fauna>=3;
-  const persons=(c.woman||0)+(c.man||0)+(c.child||0)+(c.elder||0)+(c.machi||0)+(c.lonko||0);
+  const persons=(c.woman||0)+(c.man||0)+(c.girl||0)+(c.boy||0)+(c.elder||0);
   const crops=(c.corn||0)+(c.potato||0)+(c.fishing||0);
   const domestic=(c.chicken||0)+(c.camelid||0);
-  const ceremonial=(c.rewe||0)+(c.kultrun||0)+(c.kuel||0);
-  mission2Done=(c.ruka||0)>0&&persons>=3&&crops>0&&domestic>0&&ceremonial>0;
+  const malal=(c.fence||0)+(c.fort||0);
+  const ceremonial=(c.rewe||0)+(c.kultrun||0)+(c.kuel||0)+(c.foye||0)+(c.machi||0)+(c.lonko||0);
+  mission2Done=(c.ruka||0)>0&&persons>=3&&crops>0&&domestic>0&&malal>0&&ceremonial>0;
   const n=(mission1Done?1:0)+(mission2Done?1:0);
   $('#m1').classList.toggle('done',mission1Done);$('#m1 .badge').textContent=mission1Done?'✓':'1';
   $('#m2').classList.toggle('done',mission2Done);$('#m2 .badge').textContent=mission2Done?'✓':'2';
   $('#missionBtn').innerHTML=`🎯 Misiones <strong>${n}/2</strong>`;
   $('#freeMode').style.display=n===2?'block':'none';
+  $('#m1relation').textContent=missionRelationAssessment(1);$('#m2relation').textContent=missionRelationAssessment(2);
   if(!silent){
     if(mission1Done&&!$('#m1').dataset.announced){$('#m1').dataset.announced='1';toast('¡Küme! Completaste la misión 1');beep(660,.12);confetti(24);renderItems()}
     if(mission2Done&&!$('#m2').dataset.announced){$('#m2').dataset.announced='1';toast('🌈 ¡Completaste el paisaje del lof!');beep(820,.16);confetti(60)}
@@ -610,20 +841,20 @@ const raycaster=new THREE.Raycaster(),ndc=new THREE.Vector2();
 function ndcFrom(x,y){const r=renderer.domElement.getBoundingClientRect();ndc.x=((x-r.left)/r.width)*2-1;ndc.y=-((y-r.top)/r.height)*2+1}
 function act(x,y){
   ndcFrom(x,y);raycaster.setFromCamera(ndc,camera);const hit=raycaster.intersectObjects(targets,false)[0];if(!hit)return;
-  const c=hit.object.userData;
+  const c=hit.object.userData;let feedback=null;
   if(deleting){
     if(c.j===0){toast('La base del paisaje no se borra');return}
     const removed=remove(c.i,c.j,c.k);if(removed)undoStack.push({op:'add',i:c.i,j:c.j,k:c.k,type:removed.type,rotation:removed.rotation});
   }else if(pieces[selected].kind==='block'){
     const previous=paintGround(c.i,c.k,selected);
-    if(previous){undoStack.push({op:'paint',i:c.i,k:c.k,type:previous});beep(470,.05);openInfoOnce(selected)}
+    if(previous){undoStack.push({op:'paint',i:c.i,k:c.k,type:previous});beep(470,.05);openInfoOnce(selected);feedback={type:selected,i:c.i,k:c.k}}
   }else{
     const normal=hit.face?hit.face.normal:new THREE.Vector3(0,1,0);
     const i=c.j===0?c.i:c.i+Math.round(normal.x),j=1,k=c.j===0?c.k:c.k+Math.round(normal.z);
     if(world.has(key(i,j,k))){toast('Ese espacio ya está ocupado');return}
-    if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected)}
+    if(place(i,j,k,selected)){undoStack.push({op:'remove',i,j,k});beep(470,.05);openInfoOnce(selected);feedback={type:selected,i,k}}
   }
-  evaluate();
+  evaluate();if(feedback)showRelationFeedback(feedback.type,feedback.i,feedback.k);
 }
 const shownInfo=new Set();
 function openInfoOnce(id){if(!shownInfo.has(id)){shownInfo.add(id);openInfo(id)}}
@@ -665,7 +896,7 @@ $('#undo').onclick=()=>{const a=undoStack.pop();if(!a)return;if(a.op==='remove')
 $('#reset').onclick=()=>{
   if(!confirm('¿Empezar el paisaje nuevamente?'))return;
   [...world.keys()].forEach(k=>{const [i,j,l]=k.split(',').map(Number);remove(i,j,l)});
-  undoStack.length=0;shownInfo.clear();mission1Done=mission2Done=false;
+  undoStack.length=0;shownInfo.clear();resetLandscapeFeedback();clearAllIndicators();resetClouds();if('speechSynthesis'in window)speechSynthesis.cancel();mission1Done=mission2Done=false;
   delete $('#m1').dataset.announced;delete $('#m2').dataset.announced;initialWorld();evaluate(true);renderItems();toast('Paisaje reiniciado');
 };
 
@@ -673,15 +904,13 @@ setTimeout(()=>{$('#helpChip').style.opacity='0'},6500);
 renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();toast('La vista 3D se pausó. Reinicia la página.')});
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setPixelRatio(Math.min(devicePixelRatio,1.2));renderer.setSize(innerWidth,innerHeight)});
 
-(function loop(){
-  requestAnimationFrame(loop);const t=performance.now()/1000;
-  for(const a of animated){
-    if(['puma','fox','pudu','condor','hawk','chicken','camelid','woman','man','child','elder','machi','lonko'].includes(a.type)){
-      a.mesh.position.y=a.baseY;a.mesh.rotation.y=a.baseRotation+Math.sin(t*.55+a.phase)*.035;
-    }
-  }
-  renderer.render(scene,camera);
-})();
+let lastFrameTime=performance.now();
+function loop(now){
+  requestAnimationFrame(loop);const delta=Math.min(.05,Math.max(0,(now-lastFrameTime)/1000));lastFrameTime=now;
+  if(!pageVisible)return;
+  const time=now/1000;animated.forEach(entry=>animateEntry(entry,time,delta));updateClouds(delta);updateIndicators(time);renderer.render(scene,camera);
+}
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
